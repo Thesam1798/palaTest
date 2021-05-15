@@ -1,0 +1,11 @@
+# Blocks
+tile.frame_grinder.name=Frame Grinder
+tile.casing_grinder.name=Casing Grinder
+tile.water_grinder.name=Water Grinder
+
+# Items
+item.diamond_big_sword.name=Diamond Big Sword
+item.modl_sword.name=Big Sword Model
+
+# Tabs
+itemGroup.palaTest=PalaTest

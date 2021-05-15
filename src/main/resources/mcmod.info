@@ -1,0 +1,16 @@
+[
+{
+  "modid": "palatest",
+  "name": "Test Mod",
+  "description": "Test Mod for Paladium.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["ExampleDude"],
+  "credits": "Alexandre Debris <alexandre@debris.ovh>",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
