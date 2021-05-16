@@ -19,11 +19,14 @@ import static fr.debris.palatest.common.Logger.log;
 @Mod(modid = Reference.MOD_ID, version = Reference.MOD_VERSION, name = Reference.MOD_NAME)
 public class Main {
 
+    public static Object instance;
+
     @SidedProxy(clientSide = Reference.PROXY_CLIENT_CLASS, serverSide = Reference.PROXY_SERVER_CLASS)
     protected static CommonProxy proxy;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
+        instance = this;
         log("Pre Init");
         if (event.getSide().isClient()) {
             Display.setTitle(String.format("%s - %s", Reference.MOD_NAME, Reference.MOD_VERSION));
