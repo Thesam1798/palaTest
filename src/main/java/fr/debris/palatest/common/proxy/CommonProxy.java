@@ -10,7 +10,7 @@ import fr.debris.palatest.Main;
 import fr.debris.palatest.common.GuiHandler;
 import fr.debris.palatest.common.Reference;
 import fr.debris.palatest.common.machine.TileEntityWaterGrinder;
-import fr.debris.palatest.common.machine.WaterGrinder;
+import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
@@ -29,8 +29,7 @@ public class CommonProxy {
     public static BlockProxy frameGrinder;
     public static BlockProxy casingGrinder;
 
-    public static WaterGrinder waterGrinder;
-    public static WaterGrinder waterGrinderActive;
+    public static MachineProxy waterGrinder;
 
     public static ItemProxy diamondBigSword;
     public static ItemProxy diamondBigSwordModel;
@@ -56,12 +55,28 @@ public class CommonProxy {
         log("Init BLock : Start");
         casingGrinder = new BlockProxy(Material.ground, "casing_grinder");
         frameGrinder = new BlockProxy(Material.ground, "frame_grinder");
-        // waterGrinder = new BlockProxy(Material.ground, "water_grinder");
-        // waterGrinderActive = new BlockProxy(Material.ground, "water_grinder");
-
-        waterGrinder = new WaterGrinder(false, "water_grinder", true);
-        waterGrinderActive = new WaterGrinder(true, "water_grinder_active");
         log("Init BLock : End");
+    }
+
+    protected static void initMachine() {
+        log("Init Machine : Start");
+
+        TileEntityProxy waterEntity = new TileEntityWaterGrinder();
+        waterEntity.setName("water_grinder");
+
+        waterGrinder = new MachineProxy(
+                "water_grinder",
+                "casing_grinder",
+                "water_grinder",
+                0,
+                waterGrinder,
+                false,
+                Block.soundTypeMetal,
+                true,
+                waterEntity
+        );
+
+        log("Init Machine : End");
     }
 
     public void register() {
@@ -73,6 +88,7 @@ public class CommonProxy {
 
         initRecipe();
         initItems();
+        initMachine();
         initBlocks();
     }
 }

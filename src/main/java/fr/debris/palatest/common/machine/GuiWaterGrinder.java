@@ -27,7 +27,7 @@ public class GuiWaterGrinder extends GuiContainer {
 
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
-        String name = I18n.format(this.tileEntity.getInventoryName());
+        String name = I18n.format(String.format("machine.%s", this.tileEntity.getName()));
 
         this.fontRendererObj.drawString(
                 name,
@@ -61,7 +61,7 @@ public class GuiWaterGrinder extends GuiContainer {
         int size = this.tileEntity.getDiamondValueScaled(42);
         this.drawTexturedModalRect(k + 9, l + 8, 176, 19, 14, 42 - size);
 
-        if (this.tileEntity.isBurning()) {
+        if (this.tileEntity.isWorked()) {
             size = this.tileEntity.getSmeltingProgressScaled(25);
             this.drawTexturedModalRect(k + 78, l + 33, 176, 0, size, 19);
         } else {

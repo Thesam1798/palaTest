@@ -4,7 +4,7 @@ tile.casing_grinder.name=Casing Grinder
 tile.water_grinder.name=Water Grinder
 
 # Machine
-tile.water_grinder=Water Grinder
+machine.water_grinder=Water Grinder
 
 # Items
 item.diamond_big_sword.name=Diamond Big Sword
