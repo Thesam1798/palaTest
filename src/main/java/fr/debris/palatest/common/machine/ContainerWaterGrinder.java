@@ -20,7 +20,6 @@ public class ContainerWaterGrinder extends Container {
     private final TileEntityWaterGrinder tileEntity;
     private int lastCookTime;
     private int lastBurnTime;
-    private int lastItemBurnTime;
 
     public ContainerWaterGrinder(InventoryPlayer inventory, TileEntityWaterGrinder tileEntityWaterGrinder) {
         this.tileEntity = tileEntityWaterGrinder;
@@ -31,6 +30,7 @@ public class ContainerWaterGrinder extends Container {
         // p_i1824_4_ : Y in gui
         this.addSlotToContainer(new Slot(tileEntityWaterGrinder, 0, 116, 53));
         this.addSlotToContainer(new Slot(tileEntityWaterGrinder, 1, 8, 53));
+        this.addSlotToContainer(new Slot(tileEntityWaterGrinder, 3, 116, 25));
         this.addSlotToContainer(new SlotFurnace(inventory.player, tileEntityWaterGrinder, 2, 53, 26));
 
         int i;
@@ -52,9 +52,8 @@ public class ContainerWaterGrinder extends Container {
     public void addCraftingToCrafters(ICrafting craft) {
         super.addCraftingToCrafters(craft);
 
-        craft.sendProgressBarUpdate(this, 0, this.tileEntity.cookTime);
-        craft.sendProgressBarUpdate(this, 1, this.tileEntity.burnTime);
-        craft.sendProgressBarUpdate(this, 2, this.tileEntity.curentBurnTime);
+        craft.sendProgressBarUpdate(this, 0, this.tileEntity.diamondValue);
+        craft.sendProgressBarUpdate(this, 1, this.tileEntity.progressValue);
     }
 
     @Override
@@ -64,21 +63,16 @@ public class ContainerWaterGrinder extends Container {
         for (Object crafter : this.crafters) {
             ICrafting craft = (ICrafting) crafter;
 
-            if (this.lastCookTime != this.tileEntity.cookTime) {
-                craft.sendProgressBarUpdate(this, 0, this.tileEntity.cookTime);
+            if (this.lastCookTime != this.tileEntity.diamondValue) {
+                craft.sendProgressBarUpdate(this, 0, this.tileEntity.diamondValue);
             }
 
-            if (this.lastBurnTime != this.tileEntity.burnTime) {
-                craft.sendProgressBarUpdate(this, 1, this.tileEntity.burnTime);
+            if (this.lastBurnTime != this.tileEntity.progressValue) {
+                craft.sendProgressBarUpdate(this, 1, this.tileEntity.progressValue);
             }
 
-            if (this.lastItemBurnTime != this.tileEntity.curentBurnTime) {
-                craft.sendProgressBarUpdate(this, 2, this.tileEntity.curentBurnTime);
-            }
-
-            this.lastBurnTime = this.tileEntity.burnTime;
-            this.lastCookTime = this.tileEntity.cookTime;
-            this.lastItemBurnTime = this.tileEntity.curentBurnTime;
+            this.lastBurnTime = this.tileEntity.progressValue;
+            this.lastCookTime = this.tileEntity.diamondValue;
         }
     }
 
@@ -86,15 +80,11 @@ public class ContainerWaterGrinder extends Container {
     @SideOnly(Side.CLIENT)
     public void updateProgressBar(int type, int value) {
         if (type == 0) {
-            this.tileEntity.cookTime = value;
+            this.tileEntity.diamondValue = value;
         }
 
         if (type == 1) {
-            this.tileEntity.burnTime = value;
-        }
-
-        if (type == 2) {
-            this.tileEntity.curentBurnTime = value;
+            this.tileEntity.progressValue = value;
         }
     }
 
@@ -103,6 +93,13 @@ public class ContainerWaterGrinder extends Container {
         return this.tileEntity.isUseableByPlayer(player);
     }
 
+    /**
+     * Envoie avec shift dans un slot
+     *
+     * @param player   le joueur
+     * @param position la position du slot
+     * @return un itemStack
+     */
     @Override
     public ItemStack transferStackInSlot(EntityPlayer player, int position) {
         ItemStack itemStack = null;

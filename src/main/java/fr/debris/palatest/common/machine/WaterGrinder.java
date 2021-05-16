@@ -9,6 +9,7 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import fr.debris.palatest.Main;
+import fr.debris.palatest.common.Reference;
 import fr.debris.palatest.common.proxy.CommonProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
@@ -32,8 +33,6 @@ public class WaterGrinder extends BlockContainer {
     private static boolean isBurning;
     private final boolean isBurning2;
     private final Random random = new Random();
-    @SideOnly(Side.CLIENT)
-    private IIcon top;
     @SideOnly(Side.CLIENT)
     private IIcon front;
 
@@ -152,16 +151,19 @@ public class WaterGrinder extends BlockContainer {
     @Override
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister iconRegister) {
-        this.blockIcon = iconRegister.registerIcon("furnace_side");
-        this.front = iconRegister.registerIcon(this.isBurning2 ? "furnace_front_on" : "furnace_front_off");
-        this.top = iconRegister.registerIcon("furnace_top");
+        this.blockIcon = iconRegister.registerIcon(String.format(
+                "%s:%s",
+                Reference.MOD_ID, "casing_grinder")
+        );
+        this.front = iconRegister.registerIcon(String.format(
+                "%s:%s",
+                Reference.MOD_ID, "water_grinder")
+        );
     }
 
     @Override
     public IIcon getIcon(int side, int meta) {
-        if (side == 1) {
-            return this.top;
-        } else if (side == 3) {
+        if (meta == side) {
             return this.front;
         } else {
             return this.blockIcon;
@@ -194,22 +196,25 @@ public class WaterGrinder extends BlockContainer {
 
     private void direction(World world, int x, int y, int z) {
         if (!world.isRemote) {
-            Block leftBlock = world.getBlock(x, y, z - 1);
-            Block rightBlock = world.getBlock(x, y, z + 1);
-            Block frontBlock = world.getBlock(x - 1, y, z);
-            Block backBlock = world.getBlock(x + 1, y, z);
-
+            Block block = world.getBlock(x, y, z - 1);
+            Block block1 = world.getBlock(x, y, z + 1);
+            Block block2 = world.getBlock(x - 1, y, z);
+            Block block3 = world.getBlock(x + 1, y, z);
             byte b0 = 3;
 
-            if (rightBlock.func_149730_j() && !leftBlock.func_149730_j()) {
+            if (block.func_149730_j() && !block1.func_149730_j()) {
+                b0 = 3;
+            }
+
+            if (block1.func_149730_j() && !block.func_149730_j()) {
                 b0 = 2;
             }
 
-            if (frontBlock.func_149730_j() && !backBlock.func_149730_j()) {
+            if (block2.func_149730_j() && !block3.func_149730_j()) {
                 b0 = 5;
             }
 
-            if (backBlock.func_149730_j() && !frontBlock.func_149730_j()) {
+            if (block3.func_149730_j() && !block2.func_149730_j()) {
                 b0 = 4;
             }
 

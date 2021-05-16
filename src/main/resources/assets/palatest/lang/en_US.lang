@@ -9,6 +9,7 @@ tile.water_grinder=Water Grinder
 # Items
 item.diamond_big_sword.name=Diamond Big Sword
 item.modl_sword.name=Big Sword Model
+item.modl_diamond.name=Plate
 
 # Tabs
 itemGroup.palaTest=PalaTest

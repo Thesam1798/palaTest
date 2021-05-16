@@ -6,44 +6,40 @@ package fr.debris.palatest.common.machine;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import fr.debris.palatest.common.proxy.CommonProxy;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.ISidedInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.event.ForgeEventFactory;
 
 public class TileEntityWaterGrinder extends TileEntity implements ISidedInventory {
 
     private static final int[] slotsTop = new int[]{0};
-    private static final int[] slotBottom = new int[]{2, 1};
+    private static final int[] slotBottom = new int[]{1, 2, 3};
     private static final int[] slotSides = new int[]{1};
-    protected int burnTime;
-    protected int curentBurnTime;
-    protected int cookTime;
+    protected int diamondValue = 0;
+    protected int maxDiamondValue = 100;
+    protected int smeltingDifficulty = 200;
+    protected int valueForOneDiamond = 1000;
+    protected int progressValue;
+    protected boolean inProgress = false;
 
-    // 0 Full, 1 In, 2 Out
-    private ItemStack[] itemStacks = new ItemStack[3];
+    // 0 In, 1 Ful, 2 Out, 3 Model
+    private ItemStack[] itemStacks = new ItemStack[4];
     private String name;
-
-    public static boolean isItemFuel(ItemStack itemStack) {
-        return getItemBurnTime(itemStack) > 0;
-    }
 
     private static int getItemBurnTime(ItemStack itemStack) {
         if (itemStack != null) {
-            int moddedBurnTime = ForgeEventFactory.getFuelBurnTime(itemStack);
-            if (moddedBurnTime >= 0) return moddedBurnTime;
-
-            Item item = itemStack.getItem();
-
-            if (item == Items.diamond) return 100;
+            if (itemStack.getItem().equals(CommonProxy.diamondBigSwordModel)) return 350;
         }
         return 0;
+    }
+
+    public static boolean isItemFuel(ItemStack itemStack1) {
+        return itemStack1.getItem().equals(Items.diamond);
     }
 
 
@@ -60,7 +56,7 @@ public class TileEntityWaterGrinder extends TileEntity implements ISidedInventor
 
     @Override
     public boolean canExtractItem(int position, ItemStack itemStack, int quantity) {
-        return quantity != 0 || position != 1;
+        return position == 2;
     }
 
     @Override
@@ -111,6 +107,10 @@ public class TileEntityWaterGrinder extends TileEntity implements ISidedInventor
 
         if (itemStack != null && itemStack.stackSize > this.getInventoryStackLimit()) {
             itemStack.stackSize = this.getInventoryStackLimit();
+
+            if (position == 1 && itemStack.getItem().equals(Items.diamond)) {
+                this.diamondValue += itemStack.stackSize;
+            }
         }
     }
 
@@ -145,9 +145,7 @@ public class TileEntityWaterGrinder extends TileEntity implements ISidedInventor
             }
         }
 
-        this.burnTime = tagCompound.getShort("BurnTime");
-        this.curentBurnTime = tagCompound.getShort("CurentBurnTime");
-        this.cookTime = getItemBurnTime(this.itemStacks[1]);
+        this.diamondValue = tagCompound.getInteger("DiamondValue");
 
         if (tagCompound.hasKey("CustomName", 8)) {
             this.name = tagCompound.getString("CustomName");
@@ -158,8 +156,7 @@ public class TileEntityWaterGrinder extends TileEntity implements ISidedInventor
     public void writeToNBT(NBTTagCompound tagCompound) {
         super.writeToNBT(tagCompound);
 
-        tagCompound.setShort("BurnTime", (short) this.burnTime);
-        tagCompound.setShort("CurentBurnTime", (short) this.curentBurnTime);
+        tagCompound.setInteger("DiamondValue", this.diamondValue);
 
         if (this.hasCustomInventoryName()) {
             tagCompound.setString("CustomName", this.name);
@@ -180,91 +177,119 @@ public class TileEntityWaterGrinder extends TileEntity implements ISidedInventor
     }
 
     @SideOnly(Side.CLIENT)
-    public int getCookTimeScaled(int i1) {
-        return this.cookTime * i1 / 200;
+    public int getSmeltingProgressScaled(int i1) {
+        if (this.itemStacks[3] == null) return 0;
+        return this.progressValue * i1 / getItemBurnTime(this.itemStacks[3]);
     }
 
     @SideOnly(Side.CLIENT)
-    public int getBurnTimeScaled(int i1) {
-        if (this.curentBurnTime == 0) {
-            this.curentBurnTime = 200;
-        }
-
-        return this.burnTime * i1 / this.curentBurnTime;
+    public int getDiamondValueScaled(int i1) {
+        return (this.diamondValue * this.valueForOneDiamond) * i1 / (this.maxDiamondValue * this.valueForOneDiamond);
     }
 
     public boolean isBurning() {
-        return this.burnTime > 0;
+        return this.progressValue > 0;
     }
 
+    /**
+     * Update a chaque tick
+     */
     @Override
     public void updateEntity() {
-        boolean flag = this.burnTime > 0;
-        boolean flag1 = false;
+        boolean inWork = this.progressValue > 0;
+        boolean update = clearItemStacks();
 
-        if (this.burnTime > 0) {
-            --this.burnTime;
+        if (this.itemStacks[1] != null && this.itemStacks[1].stackSize > 0 && this.itemStacks[1].getItem().equals(Items.diamond) && this.diamondValue < this.maxDiamondValue) {
+            if (this.itemStacks[1].stackSize + this.diamondValue <= this.maxDiamondValue) {
+                this.diamondValue = (this.itemStacks[1].stackSize + this.diamondValue);
+                this.itemStacks[1].stackSize = -1;
+                this.itemStacks[1] = null;
+                update = true;
+            } else if ((this.itemStacks[1].stackSize + this.diamondValue) - this.maxDiamondValue > 0) {
+                int add = (this.itemStacks[1].stackSize + this.diamondValue) - this.maxDiamondValue;
+                this.diamondValue += add;
+                this.itemStacks[1].stackSize -= add;
+                update = true;
+            }
+        }
+
+        if (this.progressValue > 0) {
+            --this.progressValue;
         }
 
         if (!this.worldObj.isRemote) {
-            if (this.burnTime == 0 && this.canSmelt()) {
-                this.curentBurnTime = this.burnTime = getItemBurnTime(this.itemStacks[1]);
-
-                if (this.burnTime > 0) {
-                    flag1 = true;
-                    if (this.itemStacks[1] != null) {
-                        --this.itemStacks[1].stackSize;
-
-                        if (this.itemStacks[1].stackSize == 0) {
-                            this.itemStacks[1] = this.itemStacks[1].getItem().getContainerItem(this.itemStacks[1]);
-                        }
-                    }
-                }
-            }
-
-            if (this.isBurning() && this.canSmelt()) {
-                ++this.cookTime;
-                if (this.cookTime == 200) {
-                    this.cookTime = 0;
-                    this.smeltItem();
-                    flag1 = true;
-                }
-            } else {
-                this.cookTime = 0;
+            if (this.progressValue == 0 && this.canSmelt() && getItemBurnTime(this.itemStacks[3]) > 0) {
+                this.progressValue = getItemBurnTime(this.itemStacks[3]);
+                this.inProgress = true;
+                update = true;
+            } else if (this.inProgress && this.progressValue == 0) {
+                this.inProgress = false;
+                update = true;
+                smeltItem();
             }
         }
 
-        if (flag != this.burnTime > 0) {
-            flag1 = true;
-            WaterGrinder.updateBlockState(this.burnTime > 0, this.worldObj, this.xCoord, this.yCoord, this.yCoord);
+        if (inWork != this.progressValue > 0) {
+            update = true;
+            WaterGrinder.updateBlockState(this.progressValue > 0, this.worldObj, this.xCoord, this.yCoord, this.yCoord);
         }
 
-        if (flag1) {
+        if (update) {
             this.markDirty();
+            updateEntity();
         }
     }
 
     private void smeltItem() {
         if (this.canSmelt()) {
-            ItemStack itemStack = FurnaceRecipes.smelting().getSmeltingResult(this.itemStacks[0]);
+            ItemStack itemStack = null;
+
+            if (this.itemStacks[3].getItem().equals(CommonProxy.diamondBigSwordModel) && this.itemStacks[0].getItem().equals(CommonProxy.diamondModel)) {
+                itemStack = new ItemStack(CommonProxy.diamondBigSword);
+            }
+
+            if (itemStack == null) return;
 
             if (this.itemStacks[2] == null) {
                 this.itemStacks[2] = itemStack.copy();
             } else if (this.itemStacks[2].getItem() == itemStack.getItem()) {
                 this.itemStacks[2].stackSize += itemStack.stackSize;
             }
+
+            this.diamondValue -= getItemBurnCost(this.itemStacks[3]);
+            this.inProgress = false;
         }
     }
 
+    private int getItemBurnCost(ItemStack itemStack) {
+        if (itemStack != null) {
+            if (itemStack.getItem().equals(CommonProxy.diamondBigSwordModel)) return 5;
+        }
+        return 0;
+    }
+
     private boolean canSmelt() {
-        if (this.itemStacks[0] == null) {
+        if (this.itemStacks[0] == null || this.itemStacks[3] == null || this.diamondValue <= 0 || this.inProgress) {
             return false;
         } else {
-            ItemStack itemStack = FurnaceRecipes.smelting().getSmeltingResult(this.itemStacks[0]);
+            ItemStack itemStack = null;
+
+            if (this.itemStacks[3].getItem().equals(CommonProxy.diamondBigSwordModel) && this.itemStacks[0].getItem().equals(CommonProxy.diamondModel)) {
+                itemStack = new ItemStack(CommonProxy.diamondBigSword);
+            }
 
             if (itemStack == null) return false;
+
+            // Si output est vide
             if (this.itemStacks[2] == null) return true;
+
+            // Si l'output n'est pas du meme type
             if (!this.itemStacks[2].isItemEqual(itemStack)) return false;
+
+            // Si aucun diamond est en stockage
+            if (this.diamondValue <= 0) return false;
+
+            // Calcule du nombres apres smelting
             int result = this.itemStacks[2].stackSize + itemStack.stackSize;
 
             return result <= getInventoryStackLimit() && result <= this.itemStacks[2].getMaxStackSize();
@@ -279,17 +304,48 @@ public class TileEntityWaterGrinder extends TileEntity implements ISidedInventor
 
     @Override
     public void openInventory() {
-
+        updateEntity();
     }
 
     @Override
     public void closeInventory() {
+        updateEntity();
+    }
 
+    private boolean clearItemStacks() {
+        boolean clear = false;
+
+        if (this.itemStacks[0] != null && this.itemStacks[0].stackSize == 0) {
+            this.itemStacks[0] = null;
+            clear = true;
+        }
+
+        if (this.itemStacks[1] != null && this.itemStacks[1].stackSize == 0) {
+            this.itemStacks[1] = null;
+            clear = true;
+        }
+
+        if (this.itemStacks[2] != null && this.itemStacks[2].stackSize == 0) {
+            this.itemStacks[2] = null;
+            clear = true;
+        }
+
+        if (this.itemStacks[3] != null && this.itemStacks[3].stackSize == 0) {
+            this.itemStacks[3] = null;
+            clear = true;
+        }
+
+        if (this.diamondValue > this.maxDiamondValue) {
+            this.diamondValue = this.maxDiamondValue;
+        }
+
+        return clear;
     }
 
     @Override
     public boolean isItemValidForSlot(int position, ItemStack itemStack) {
-        return position != 2 && (position != 1 || isItemFuel(itemStack));
+        if (position == 1 && itemStack.getItem().equals(Items.diamond)) return true;
+        return position == 0 && itemStack.getItem().equals(CommonProxy.diamondBigSwordModel);
     }
 
     public void setName(String displayName) {

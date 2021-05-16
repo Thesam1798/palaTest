@@ -52,20 +52,20 @@ public class GuiWaterGrinder extends GuiContainer {
         int l = (this.height - this.ySize) / 2;
         this.drawTexturedModalRect(k, l, 0, 0, this.xSize, this.ySize);
 
+        // p_73729_1_ : X Destination
+        // p_73729_2_ : Y Destination
+        // p_73729_3_ : X Source
+        // p_73729_4_ : Y Source
+        // p_73729_5_ : Y Width
+        // p_73729_6_ : Y Height
+        int size = this.tileEntity.getDiamondValueScaled(42);
+        this.drawTexturedModalRect(k + 9, l + 8, 176, 19, 14, 42 - size);
+
         if (this.tileEntity.isBurning()) {
-            // p_73729_1_ : X Destination
-            // p_73729_2_ : Y Destination
-            // p_73729_3_ : X Source
-            // p_73729_4_ : Y Source
-            // p_73729_5_ : Y Width
-            // p_73729_6_ : Y Height
-            int size = this.tileEntity.getCookTimeScaled(25);
-            this.drawTexturedModalRect(k + 78, l + 33, 176, 0, 25 - size, 19);
-            size = this.tileEntity.getBurnTimeScaled(42);
-            this.drawTexturedModalRect(k + 9, l + 8, 176, 19, 14, 42 - size);
+            size = this.tileEntity.getSmeltingProgressScaled(25);
+            this.drawTexturedModalRect(k + 78, l + 33, 176, 0, size, 19);
         } else {
             this.drawTexturedModalRect(k + 78, l + 33, 176, 0, 25, 19);
-            this.drawTexturedModalRect(k + 9, l + 8, 176, 19, 14, 42);
         }
     }
 }

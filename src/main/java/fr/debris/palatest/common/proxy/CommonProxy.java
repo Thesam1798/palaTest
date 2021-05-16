@@ -34,6 +34,7 @@ public class CommonProxy {
 
     public static ItemProxy diamondBigSword;
     public static ItemProxy diamondBigSwordModel;
+    public static ItemProxy diamondModel;
 
     public static GuiProxy waterGrinderGui;
 
@@ -47,6 +48,7 @@ public class CommonProxy {
         log("Init Items : Start");
         diamondBigSword = new ItemProxy("diamond_big_sword");
         diamondBigSwordModel = new ItemProxy("modl_sword");
+        diamondModel = new ItemProxy("modl_diamond");
         log("Init Items : End");
     }
 
