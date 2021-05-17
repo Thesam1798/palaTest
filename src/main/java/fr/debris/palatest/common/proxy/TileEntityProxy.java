@@ -35,7 +35,6 @@ public abstract class TileEntityProxy extends TileEntity implements ISidedInvent
      */
     @Override
     public int[] getAccessibleSlotsFromSide(int side) {
-        // Code coverage 17/05/2021 non utiliser ??
         if (side == 0) return slotBottom;
         return side == 1 ? slotsTop : slotSides;
     }
@@ -50,7 +49,6 @@ public abstract class TileEntityProxy extends TileEntity implements ISidedInvent
      */
     @Override
     public boolean canInsertItem(int position, ItemStack itemStack, int side) {
-        // Code coverage 17/05/2021 non utiliser ??
         return this.isItemValidForSlot(position, itemStack);
     }
 

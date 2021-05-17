@@ -225,7 +225,6 @@ public class MachineProxy extends BlockContainer {
      */
     @Override
     public Item getItemDropped(int i1, Random random, int i2) {
-        // Code coverage 17/05/2021 non utiliser ??
         return Item.getItemFromBlock(this.blockOnDrop);
     }
 
@@ -240,7 +239,6 @@ public class MachineProxy extends BlockContainer {
      */
     @Override
     public Item getItem(World world, int x, int y, int z) {
-        // Code coverage 17/05/2021 non utiliser ??
         return Item.getItemFromBlock(this.blockOnDrop);
     }
 
@@ -255,7 +253,6 @@ public class MachineProxy extends BlockContainer {
     @Override
     @SideOnly(Side.CLIENT)
     public void onBlockAdded(World world, int x, int y, int z) {
-        // Code coverage 17/05/2021 non utiliser ??
         super.onBlockAdded(world, x, y, z);
         this.direction(world, x, y, z);
     }
@@ -269,7 +266,6 @@ public class MachineProxy extends BlockContainer {
      * @param z     Z
      */
     private void direction(World world, int x, int y, int z) {
-        // Code coverage 17/05/2021 non utiliser ??
         if (!world.isRemote) {
             Block block = world.getBlock(x, y, z - 1);
             Block block1 = world.getBlock(x, y, z + 1);
