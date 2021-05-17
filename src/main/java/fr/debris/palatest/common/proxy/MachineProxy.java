@@ -67,6 +67,16 @@ public class MachineProxy extends BlockContainer {
         GameRegistry.registerBlock(this, name);
     }
 
+    /**
+     * A la destruction du block
+     *
+     * @param world le monde
+     * @param x     X
+     * @param y     Y
+     * @param z     Z
+     * @param block le block
+     * @param meta  les meta du block
+     */
     @Override
     // SonarLint : java:S3776 : Cognitive Complexity of methods should not be too hig
     public void breakBlock(World world, int x, int y, int z, Block block, int meta) {
@@ -110,6 +120,15 @@ public class MachineProxy extends BlockContainer {
         }
     }
 
+    /**
+     * A un tick random création d'un effet
+     *
+     * @param world  le monde
+     * @param x      X
+     * @param y      Y
+     * @param z      Z
+     * @param random
+     */
     @Override
     @SideOnly(Side.CLIENT)
     public void randomDisplayTick(World world, int x, int y, int z, Random random) {
@@ -142,6 +161,11 @@ public class MachineProxy extends BlockContainer {
         }
     }
 
+    /**
+     * Enregistrement des icon pour le block
+     *
+     * @param iconRegister IIconRegister
+     */
     @Override
     @SideOnly(Side.CLIENT)
     public void registerBlockIcons(IIconRegister iconRegister) {
@@ -155,6 +179,13 @@ public class MachineProxy extends BlockContainer {
         );
     }
 
+    /**
+     * Récupération des icon en fonction de la face
+     *
+     * @param side face
+     * @param meta meta de la face
+     * @return IIcon
+     */
     @Override
     public IIcon getIcon(int side, int meta) {
         if (meta == side) {
@@ -164,24 +195,63 @@ public class MachineProxy extends BlockContainer {
         }
     }
 
+    /**
+     * Au clique sur le block
+     *
+     * @param world  le monde
+     * @param x      X
+     * @param y      Y
+     * @param z      Z
+     * @param player le joueur
+     * @param i1     not used
+     * @param f1     not used
+     * @param f2     not used
+     * @param f3     not used
+     * @return si il y a une action
+     */
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int i1, float f1, float f2, float f3) {
         player.openGui(Main.getInstance(), this.guiInstance, world, x, y, z);
         return true;
     }
 
+    /**
+     * Quand on drop l'item
+     *
+     * @param i1     not used
+     * @param random not used
+     * @param i2     not used
+     * @return Item
+     */
     @Override
     public Item getItemDropped(int i1, Random random, int i2) {
         // Code coverage 17/05/2021 non utiliser ??
         return Item.getItemFromBlock(this.blockOnDrop);
     }
 
+    /**
+     * A la récupération du block
+     *
+     * @param world le monde
+     * @param x     X
+     * @param y     Y
+     * @param z     Z
+     * @return Item
+     */
     @Override
-    public Item getItem(World world, int i1, int i2, int i3) {
+    public Item getItem(World world, int x, int y, int z) {
         // Code coverage 17/05/2021 non utiliser ??
         return Item.getItemFromBlock(this.blockOnDrop);
     }
 
+    /**
+     * Quand le bloc est ajouter au monde
+     *
+     * @param world le monde
+     * @param x     X
+     * @param y     Y
+     * @param z     Z
+     */
     @Override
     @SideOnly(Side.CLIENT)
     public void onBlockAdded(World world, int x, int y, int z) {
@@ -190,6 +260,14 @@ public class MachineProxy extends BlockContainer {
         this.direction(world, x, y, z);
     }
 
+    /**
+     * Définition de la direction pour les faces
+     *
+     * @param world le monde
+     * @param x     X
+     * @param y     Y
+     * @param z     Z
+     */
     private void direction(World world, int x, int y, int z) {
         // Code coverage 17/05/2021 non utiliser ??
         if (!world.isRemote) {
@@ -219,6 +297,16 @@ public class MachineProxy extends BlockContainer {
         }
     }
 
+    /**
+     * Quand le block est placer par une entity
+     *
+     * @param world     le monde
+     * @param x         X
+     * @param y         Y
+     * @param z         Z
+     * @param entity    le joueur a 95%
+     * @param itemStack le stack de l'entité
+     */
     @Override
     public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase entity, ItemStack itemStack) {
         int l = MathHelper.floor_double((double) (entity.rotationYaw * 4.0F / 360.0F) + 0.5D) & 3;
@@ -244,6 +332,13 @@ public class MachineProxy extends BlockContainer {
         }
     }
 
+    /**
+     * Création de la TileEntity a la pose du block
+     *
+     * @param world world
+     * @param i1    not used
+     * @return TileEntity
+     */
     @Override
     public TileEntity createNewTileEntity(World world, int i1) {
         TileEntityProxy o = null;

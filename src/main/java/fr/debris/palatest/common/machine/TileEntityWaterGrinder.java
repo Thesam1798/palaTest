@@ -21,7 +21,7 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
     protected int maxDiamondValue = 100;
     protected int smeltingDifficulty = 200;
     protected int valueForOneDiamond = 1000;
-    // 0 Plate, 1 Full, 2 Out, 3 Model
+    // 0 Plate, 1 Fuel, 2 Out, 3 Model
     protected ItemStack[] itemStacks = new ItemStack[4];
 
     public TileEntityWaterGrinder() {
@@ -29,18 +29,21 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
         super.itemStacks = this.itemStacks;
     }
 
-    public static boolean isItemFuel(ItemStack itemStack1) {
-        return itemStack1.getItem().equals(Items.diamond);
+    /**
+     * Permet de vérifier si l'item est bien du fuel
+     *
+     * @param stack le stack d'items a vérifier
+     * @return boolean
+     */
+    public static boolean isItemFuel(ItemStack stack) {
+        return stack.getItem().equals(Items.diamond);
     }
 
-    private ItemStack getFull() {
-        if (this.itemStacks[1] != null && this.itemStacks[1].stackSize > 0) {
-            return this.itemStacks[1];
-        } else {
-            return null;
-        }
-    }
-
+    /**
+     * Permet de récupérer la plate en slot 0
+     *
+     * @return ItemStack
+     */
     private ItemStack getPlate() {
         if (this.itemStacks[0] != null && this.itemStacks[0].stackSize > 0) {
             return this.itemStacks[0];
@@ -49,14 +52,24 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
         }
     }
 
-    private ItemStack getModel() {
-        if (this.itemStacks[3] != null && this.itemStacks[3].stackSize > 0) {
-            return this.itemStacks[3];
+    /**
+     * Permet de récupérer le fuel en slot 1
+     *
+     * @return ItemStack
+     */
+    private ItemStack getFuel() {
+        if (this.itemStacks[1] != null && this.itemStacks[1].stackSize > 0) {
+            return this.itemStacks[1];
         } else {
             return null;
         }
     }
 
+    /**
+     * Permet de récupérer la sortie en slot 2
+     *
+     * @return ItemStack
+     */
     private ItemStack getOutput() {
         if (this.itemStacks[2] != null && this.itemStacks[2].stackSize > 0) {
             return this.itemStacks[2];
@@ -65,19 +78,41 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
         }
     }
 
-    protected int getItemBurnTime(ItemStack itemStack) {
-        if (itemStack != null) {
-            if (itemStack.getItem().equals(CommonProxy.getDiamondBigSwordModel())) return 350;
+    /**
+     * Permet de récupérer le model en slot 3
+     *
+     * @return ItemStack
+     */
+    private ItemStack getModel() {
+        if (this.itemStacks[3] != null && this.itemStacks[3].stackSize > 0) {
+            return this.itemStacks[3];
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * Permet de savoir combien de temps (tiks) il faut pour smelt l'item
+     *
+     * @param stack le stack d'items
+     * @return int
+     */
+    protected int getItemBurnTime(ItemStack stack) {
+        if (stack != null) {
+            if (stack.getItem().equals(CommonProxy.getDiamondBigSwordModel())) return 350;
         }
         return 0;
     }
 
     @Override
-    public boolean canExtractItem(int position, ItemStack itemStack, int quantity) {
-        // Code coverage 17/05/2021 non utiliser ??
+    // Code coverage 17/05/2021 non utiliser ??
+    public boolean canExtractItem(int position, ItemStack itemStack, int side) {
         return position == 2;
     }
 
+    /**
+     * Définit la pile d'objets donnée sur l'emplacement spécifié dans l'inventaire.
+     */
     @Override
     public void setInventorySlotContents(int position, ItemStack itemStack) {
         this.itemStacks[position] = itemStack;
@@ -93,6 +128,11 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
         }
     }
 
+    /**
+     * Permet de set les info depuis les NBT
+     *
+     * @param tagCompound Object a update
+     */
     @Override
     public void readFromNBT(NBTTagCompound tagCompound) {
         super.readFromNBT(tagCompound);
@@ -100,11 +140,21 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
         this.diamondValue = tagCompound.getInteger("DiamondValue");
     }
 
+    /**
+     * Retourne la taille de la machine
+     *
+     * @return int
+     */
     @Override
     public int getSizeInventory() {
         return 4;
     }
 
+    /**
+     * Permet de set les NBT depuis les info
+     *
+     * @param tagCompound Object a update
+     */
     @Override
     public void writeToNBT(NBTTagCompound tagCompound) {
         super.itemStacks = this.itemStacks;
@@ -112,17 +162,32 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
         tagCompound.setInteger("DiamondValue", this.diamondValue);
     }
 
+    /**
+     * Permet de convertir la progression en "pixel"
+     *
+     * @param size 100% = size
+     * @return int
+     */
     @SideOnly(Side.CLIENT)
-    public int getSmeltingProgressScaled(int i1) {
+    public int getSmeltingProgressScaled(int size) {
         if (this.getModel() == null) return 0;
-        return this.progressValue * i1 / getItemBurnTime(this.getModel());
+        return this.progressValue * size / getItemBurnTime(this.getModel());
     }
 
+    /**
+     * Permet de convertir la progression en "pixel"
+     *
+     * @param size 100% = size
+     * @return int
+     */
     @SideOnly(Side.CLIENT)
-    public int getDiamondValueScaled(int i1) {
-        return (this.diamondValue * this.valueForOneDiamond) * i1 / (this.maxDiamondValue * this.valueForOneDiamond);
+    public int getDiamondValueScaled(int size) {
+        return (this.diamondValue * this.valueForOneDiamond) * size / (this.maxDiamondValue * this.valueForOneDiamond);
     }
 
+    /**
+     * Action a chaque update
+     */
     @Override
     public void updateEntity() {
         super.itemStacks = this.itemStacks;
@@ -134,7 +199,7 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
             this.progressValue = 0;
         }
 
-        ItemStack full = this.getFull();
+        ItemStack full = this.getFuel();
         if (full != null && Items.diamond.equals(full.getItem()) && this.diamondValue < this.maxDiamondValue) {
             if (full.stackSize + this.diamondValue <= this.maxDiamondValue) {
                 this.diamondValue = (this.itemStacks[1].stackSize + this.diamondValue);
@@ -158,6 +223,9 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
         super.updateEntity();
     }
 
+    /**
+     * Cela permet de process l'item
+     */
     @Override
     protected void smeltItem() {
         if (this.canSmelt()) {
@@ -186,13 +254,24 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
         }
     }
 
-    private int getItemBurnCost(ItemStack itemStack) {
-        if (itemStack != null) {
-            if (CommonProxy.getDiamondBigSwordModel().equals(itemStack.getItem())) return 5;
+    /**
+     * Permet de savoir combien de consommation prend l'item
+     *
+     * @param stack le stack
+     * @return int
+     */
+    private int getItemBurnCost(ItemStack stack) {
+        if (stack != null) {
+            if (CommonProxy.getDiamondBigSwordModel().equals(stack.getItem())) return 5;
         }
         return 0;
     }
 
+    /**
+     * Permet de savoir si tout est pres pour le process
+     *
+     * @return boolean
+     */
     @Override
     // SonarLint : java:S3776 : Cognitive Complexity of methods should not be too high
     protected boolean canSmelt() {
@@ -228,10 +307,17 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
         }
     }
 
+    /**
+     * Retourne si l'item peut entrée dans le slot
+     *
+     * @param position la position
+     * @param stack    le stack
+     * @return boolean
+     */
     @Override
-    public boolean isItemValidForSlot(int position, ItemStack itemStack) {
+    public boolean isItemValidForSlot(int position, ItemStack stack) {
         // Code coverage 17/05/2021 non utiliser ??
-        if (position == 1 && itemStack.getItem().equals(Items.diamond)) return true;
-        return position == 0 && itemStack.getItem().equals(CommonProxy.getDiamondBigSwordModel());
+        if (position == 1 && stack.getItem().equals(Items.diamond)) return true;
+        return position == 0 && stack.getItem().equals(CommonProxy.getDiamondBigSwordModel());
     }
 }

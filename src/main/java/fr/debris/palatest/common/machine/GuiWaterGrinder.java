@@ -25,6 +25,12 @@ public class GuiWaterGrinder extends GuiContainer {
         this.tileEntity = tileEntityWaterGrinder;
     }
 
+    /**
+     * Affichage des texte
+     *
+     * @param x not used
+     * @param y not used
+     */
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         String name = I18n.format(String.format("machine.%s", this.tileEntity.getName()));
@@ -44,6 +50,13 @@ public class GuiWaterGrinder extends GuiContainer {
         );
     }
 
+    /**
+     * Gestion des progress bar
+     *
+     * @param f1 not used
+     * @param i1 not used
+     * @param i2 not used
+     */
     @Override
     protected void drawGuiContainerBackgroundLayer(float f1, int i1, int i2) {
         GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);

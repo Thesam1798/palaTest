@@ -27,36 +27,76 @@ public abstract class TileEntityProxy extends TileEntity implements ISidedInvent
 
     protected abstract int getItemBurnTime(ItemStack itemStack);
 
+    /**
+     * Renvoie un tableau contenant les indices des emplacements accessibles par automatisation du côté donné de ce bloc.
+     *
+     * @param side side
+     * @return int[]
+     */
     @Override
-    public int[] getAccessibleSlotsFromSide(int position) {
+    public int[] getAccessibleSlotsFromSide(int side) {
         // Code coverage 17/05/2021 non utiliser ??
-        if (position == 0) return slotBottom;
-        return position == 1 ? slotsTop : slotSides;
+        if (side == 0) return slotBottom;
+        return side == 1 ? slotsTop : slotSides;
     }
 
+    /**
+     * Renvoie true si l'automatisation peut insérer l'élément donné dans l'emplacement donné depuis le côté donné.
+     *
+     * @param position  emplacement
+     * @param itemStack élément
+     * @param side      côté
+     * @return boolean
+     */
     @Override
-    public boolean canInsertItem(int position, ItemStack itemStack, int quantity) {
+    public boolean canInsertItem(int position, ItemStack itemStack, int side) {
         // Code coverage 17/05/2021 non utiliser ??
         return this.isItemValidForSlot(position, itemStack);
     }
 
+    /**
+     * Renvoie true si l'automatisation peut extraire l'élément donné dans l'emplacement donné du côté donné
+     *
+     * @param position  emplacement
+     * @param itemStack élément
+     * @param side      côté
+     * @return boolean
+     */
     @Override
-    public boolean canExtractItem(int position, ItemStack itemStack, int quantity) {
+    public boolean canExtractItem(int position, ItemStack itemStack, int side) {
         // Code coverage 17/05/2021 non utiliser | 100% de surcharge
         return position == 2;
     }
 
+    /**
+     * Retourne la taille de la machine
+     *
+     * @return int
+     */
     @Override
     public int getSizeInventory() {
         // Code coverage 17/05/2021 non utiliser | 100% de surcharge
         return 3;
     }
 
+    /**
+     * Renvoie le stack dans l'emplacement X
+     *
+     * @param position position
+     * @return ItemStack
+     */
     @Override
     public ItemStack getStackInSlot(int position) {
         return this.itemStacks[position];
     }
 
+    /**
+     * Supprime d'un emplacement d'inventaire d'un nombre spécifié d'éléments
+     *
+     * @param position position
+     * @param quantity quantity
+     * @return ItemStack
+     */
     @Override
     public ItemStack decrStackSize(int position, int quantity) {
         if (this.itemStacks[position] != null) {
@@ -77,6 +117,13 @@ public abstract class TileEntityProxy extends TileEntity implements ISidedInvent
         }
     }
 
+    /**
+     * Lorsque certains conteneurs sont fermés, ils appellent cela sur chaque emplacement, puis déposent tout ce qu'ils retournent en tant qu'entité
+     * Item - comme lorsque vous fermez une interface graphique de Workbench.
+     *
+     * @param position position
+     * @return ItemStack
+     */
     @Override
     public ItemStack getStackInSlotOnClosing(int position) {
         // Code coverage 17/05/2021 non utiliser ??
@@ -90,6 +137,9 @@ public abstract class TileEntityProxy extends TileEntity implements ISidedInvent
         }
     }
 
+    /**
+     * Définit la pile d'objets donnée sur l'emplacement spécifié dans l'inventaire.
+     */
     @Override
     public void setInventorySlotContents(int position, ItemStack itemStack) {
         // Code coverage 17/05/2021 non utiliser | 100% de surcharge
@@ -100,22 +150,42 @@ public abstract class TileEntityProxy extends TileEntity implements ISidedInvent
         }
     }
 
+    /**
+     * Permet de récupérer le nom de la machine pour l'ui
+     *
+     * @return String
+     */
     @Override
     public String getInventoryName() {
         // Code coverage 17/05/2021 non utiliser ??
         return this.hasCustomInventoryName() ? this.name : "Undefined Name";
     }
 
+    /**
+     * Permet de savoir si la machine a un nom custom
+     *
+     * @return boolean
+     */
     @Override
     public boolean hasCustomInventoryName() {
         return this.name != null && this.name.length() > 0;
     }
 
+    /**
+     * Renvoie la taille de maximale d'inventaire
+     *
+     * @return int
+     */
     @Override
     public int getInventoryStackLimit() {
         return 64;
     }
 
+    /**
+     * Permet de set les info depuis les NBT
+     *
+     * @param tagCompound Object a update
+     */
     @Override
     public void readFromNBT(NBTTagCompound tagCompound) {
         super.readFromNBT(tagCompound);
@@ -139,6 +209,11 @@ public abstract class TileEntityProxy extends TileEntity implements ISidedInvent
         }
     }
 
+    /**
+     * Permet de set les NBT depuis les info
+     *
+     * @param tagCompound Object a update
+     */
     @Override
     public void writeToNBT(NBTTagCompound tagCompound) {
         super.writeToNBT(tagCompound);
@@ -192,28 +267,53 @@ public abstract class TileEntityProxy extends TileEntity implements ISidedInvent
         }
     }
 
+    /**
+     * Cela permet de process l'item
+     */
     protected abstract void smeltItem();
 
+    /**
+     * Permet de savoir si tout est pres pour le process
+     *
+     * @return boolean
+     */
     protected abstract boolean canSmelt();
 
+    /**
+     * Permet de vérifier si le joueur a la possibilité d'ouvrir l'interface
+     *
+     * @param player joueur
+     * @return boolean
+     */
     @Override
     public boolean isUseableByPlayer(EntityPlayer player) {
         if (this.worldObj.getTileEntity(this.xCoord, this.yCoord, this.zCoord) != this) return false;
         return player.getDistanceSq(this.xCoord + 0.5D, this.yCoord + 0.5D, this.zCoord + 0.5D) < 64.0D;
     }
 
+    /**
+     * A l'ouverture de l'inventaire
+     */
     @Override
     public void openInventory() {
         // Code coverage 17/05/2021 non utiliser ??
         updateEntity();
     }
 
+    /**
+     * A la fermeture de l'inventaire
+     */
     @Override
     public void closeInventory() {
         // Code coverage 17/05/2021 non utiliser ??
         updateEntity();
     }
 
+    /**
+     * Clear les ItemStacks a 0
+     *
+     * @return si un changement effectué
+     */
     protected boolean clearItemStacks() {
         boolean clear = false;
 
@@ -227,14 +327,28 @@ public abstract class TileEntityProxy extends TileEntity implements ISidedInvent
         return clear;
     }
 
+    /**
+     * Récupère le nom de la machine
+     *
+     * @return nom
+     */
     public String getName() {
         return this.name;
     }
 
+    /**
+     * Définit le nom de la machine
+     *
+     * @param displayName nom
+     */
     public void setName(String displayName) {
         this.name = displayName;
     }
 
+    /**
+     * Renvoie si la machine est en fonctionnement
+     * @return boolean
+     */
     public boolean isWorked() {
         return this.progressValue > 0;
     }
