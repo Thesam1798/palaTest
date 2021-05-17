@@ -68,12 +68,13 @@ public class MachineProxy extends BlockContainer {
     }
 
     @Override
+    // SonarLint : java:S3776 : Cognitive Complexity of methods should not be too hig
     public void breakBlock(World world, int x, int y, int z, Block block, int meta) {
         if (this.entity != null) {
-            TileEntityProxy entity = (TileEntityProxy) world.getTileEntity(x, y, z);
-            if (entity != null) {
-                for (int i = 0; i < entity.getSizeInventory(); ++i) {
-                    ItemStack itemStack = entity.getStackInSlot(i);
+            TileEntityProxy tileEntity = (TileEntityProxy) world.getTileEntity(x, y, z);
+            if (tileEntity != null) {
+                for (int i = 0; i < tileEntity.getSizeInventory(); ++i) {
+                    ItemStack itemStack = tileEntity.getStackInSlot(i);
 
                     if (itemStack != null) {
                         float f1 = this.random.nextFloat() * 0.6F + 0.1F;
@@ -113,8 +114,8 @@ public class MachineProxy extends BlockContainer {
     @SideOnly(Side.CLIENT)
     public void randomDisplayTick(World world, int x, int y, int z, Random random) {
         if (this.animate && this.entity != null) {
-            TileEntityProxy entity = (TileEntityProxy) world.getTileEntity(x, y, z);
-            if (entity != null && entity.isWorked()) {
+            TileEntityProxy tileEntity = (TileEntityProxy) world.getTileEntity(x, y, z);
+            if (tileEntity != null && tileEntity.isWorked()) {
                 int direction = world.getBlockMetadata(x, y, z);
                 float x1 = (float) x + 0.5F;
                 float y1 = (float) y + 0.0F + random.nextFloat() * 6.0F / 16.0F;
@@ -165,28 +166,32 @@ public class MachineProxy extends BlockContainer {
 
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int i1, float f1, float f2, float f3) {
-        player.openGui(Main.instance, this.guiInstance, world, x, y, z);
+        player.openGui(Main.getInstance(), this.guiInstance, world, x, y, z);
         return true;
     }
 
     @Override
     public Item getItemDropped(int i1, Random random, int i2) {
+        // Code coverage 17/05/2021 non utiliser ??
         return Item.getItemFromBlock(this.blockOnDrop);
     }
 
     @Override
     public Item getItem(World world, int i1, int i2, int i3) {
+        // Code coverage 17/05/2021 non utiliser ??
         return Item.getItemFromBlock(this.blockOnDrop);
     }
 
     @Override
     @SideOnly(Side.CLIENT)
     public void onBlockAdded(World world, int x, int y, int z) {
+        // Code coverage 17/05/2021 non utiliser ??
         super.onBlockAdded(world, x, y, z);
         this.direction(world, x, y, z);
     }
 
     private void direction(World world, int x, int y, int z) {
+        // Code coverage 17/05/2021 non utiliser ??
         if (!world.isRemote) {
             Block block = world.getBlock(x, y, z - 1);
             Block block1 = world.getBlock(x, y, z + 1);
@@ -194,20 +199,20 @@ public class MachineProxy extends BlockContainer {
             Block block3 = world.getBlock(x + 1, y, z);
             byte b0 = 3;
 
-            if (block.func_149730_j() && !block1.func_149730_j()) {
-                b0 = 3;
-            }
-
             if (block1.func_149730_j() && !block.func_149730_j()) {
                 b0 = 2;
             }
 
-            if (block2.func_149730_j() && !block3.func_149730_j()) {
-                b0 = 5;
+            if (block.func_149730_j() && !block1.func_149730_j()) {
+                b0 = 3;
             }
 
             if (block3.func_149730_j() && !block2.func_149730_j()) {
                 b0 = 4;
+            }
+
+            if (block2.func_149730_j() && !block3.func_149730_j()) {
+                b0 = 5;
             }
 
             world.setBlockMetadataWithNotify(x, y, z, b0, 2);

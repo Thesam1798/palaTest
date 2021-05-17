@@ -4,24 +4,15 @@
  */
 package fr.debris.palatest.client.proxy;
 
+import fr.debris.palatest.common.Reference;
 import fr.debris.palatest.common.proxy.CommonProxy;
-import fr.debris.palatest.common.proxy.GuiProxy;
-
-import static fr.debris.palatest.common.Logger.log;
+import org.lwjgl.opengl.Display;
 
 public class ClientProxy extends CommonProxy {
 
-    protected static void initGui() {
-        log("Init Gui : Start");
-        waterGrinderGui = new GuiProxy(175, 165, "water_grinder");
-        log("Init Gui : End");
-    }
-
     @Override
-    public void register() {
-        log("Client Proxy register");
-        initGui();
-
-        super.register();
+    public void preInit() {
+        Display.setTitle(String.format("%s - %s", Reference.MOD_NAME, Reference.MOD_VERSION));
+        super.preInit();
     }
 }

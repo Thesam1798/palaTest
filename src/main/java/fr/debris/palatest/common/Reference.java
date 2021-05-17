@@ -12,7 +12,7 @@ public class Reference {
     public static final String PROXY_CLIENT_CLASS = "fr.debris.palatest.client.proxy.ClientProxy";
     public static final String PROXY_SERVER_CLASS = "fr.debris.palatest.common.proxy.CommonProxy";
 
-    // SonarLint Rule : java:S1118
+    // SonarLint : java:S1118 : Utility classes should not have public constructors
     private Reference() {
         throw new IllegalStateException("Utility class");
     }

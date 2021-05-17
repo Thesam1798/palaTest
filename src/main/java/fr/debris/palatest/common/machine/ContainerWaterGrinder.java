@@ -21,6 +21,12 @@ public class ContainerWaterGrinder extends Container {
     private int lastCookTime;
     private int lastBurnTime;
 
+    /**
+     * Création du container
+     *
+     * @param inventory              inventaire du joueur
+     * @param tileEntityWaterGrinder la Tile
+     */
     public ContainerWaterGrinder(InventoryPlayer inventory, TileEntityWaterGrinder tileEntityWaterGrinder) {
         this.tileEntity = tileEntityWaterGrinder;
 
@@ -48,6 +54,11 @@ public class ContainerWaterGrinder extends Container {
         }
     }
 
+    /**
+     * Ajout d'une GUI et update des progress bar
+     *
+     * @param craft ICrafting
+     */
     @Override
     public void addCraftingToCrafters(ICrafting craft) {
         super.addCraftingToCrafters(craft);
@@ -56,6 +67,9 @@ public class ContainerWaterGrinder extends Container {
         craft.sendProgressBarUpdate(this, 1, this.tileEntity.progressValue);
     }
 
+    /**
+     * Si un changent est survenue update de tout les progress bar
+     */
     @Override
     public void detectAndSendChanges() {
         super.detectAndSendChanges();
@@ -76,6 +90,12 @@ public class ContainerWaterGrinder extends Container {
         }
     }
 
+    /**
+     * Permet de set les valeur des progress bar
+     *
+     * @param type  la progress bar
+     * @param value la valeur
+     */
     @Override
     @SideOnly(Side.CLIENT)
     public void updateProgressBar(int type, int value) {
@@ -88,6 +108,12 @@ public class ContainerWaterGrinder extends Container {
         }
     }
 
+    /**
+     * Vérifit si le joueur en param peut utiliser le container
+     *
+     * @param player joueur
+     * @return boolean
+     */
     @Override
     public boolean canInteractWith(EntityPlayer player) {
         return this.tileEntity.isUseableByPlayer(player);
@@ -101,6 +127,8 @@ public class ContainerWaterGrinder extends Container {
      * @return un itemStack
      */
     @Override
+    // SonarLint : java:S3776 : Cognitive Complexity of methods should not be too hig
+    // Code coverage 17/05/2021 utiliser moins de 50%
     public ItemStack transferStackInSlot(EntityPlayer player, int position) {
         ItemStack itemStack = null;
         Slot slot = (Slot) this.inventorySlots.get(position);

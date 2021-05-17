@@ -10,7 +10,7 @@ public class Logger {
 
     private static final org.apache.logging.log4j.Logger log = FMLLog.getLogger();
 
-    // SonarLint Rule : java:S1118
+    // SonarLint : java:S1118 : Utility classes should not have public constructors
     private Logger() {
         throw new IllegalStateException("Utility class");
     }

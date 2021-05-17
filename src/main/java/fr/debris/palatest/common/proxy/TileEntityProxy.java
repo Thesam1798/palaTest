@@ -13,35 +13,42 @@ import net.minecraft.tileentity.TileEntity;
 
 public abstract class TileEntityProxy extends TileEntity implements ISidedInventory {
 
-    public static final int[] slotsTop = new int[]{0};
-    public static final int[] slotBottom = new int[]{2};
-    public static final int[] slotSides = new int[]{1};
+    // SonarLint Correction : java:S1192 : String literals should not be duplicated
+    public static final String NBT_CUSTOM_NAME = "CustomName";
+    protected static final int[] slotsTop = new int[]{0};
+    protected static final int[] slotBottom = new int[]{2};
+    protected static final int[] slotSides = new int[]{1};
+    // SonarLint : java:S1104 : Class variable fields should not have public accessibility
     public int progressValue;
-    public boolean inProgress = false;
+    protected boolean inProgress = false;
 
-    public ItemStack[] itemStacks;
-    public String name;
+    protected ItemStack[] itemStacks;
+    protected String name;
 
     protected abstract int getItemBurnTime(ItemStack itemStack);
 
     @Override
     public int[] getAccessibleSlotsFromSide(int position) {
+        // Code coverage 17/05/2021 non utiliser ??
         if (position == 0) return slotBottom;
         return position == 1 ? slotsTop : slotSides;
     }
 
     @Override
     public boolean canInsertItem(int position, ItemStack itemStack, int quantity) {
+        // Code coverage 17/05/2021 non utiliser ??
         return this.isItemValidForSlot(position, itemStack);
     }
 
     @Override
     public boolean canExtractItem(int position, ItemStack itemStack, int quantity) {
+        // Code coverage 17/05/2021 non utiliser | 100% de surcharge
         return position == 2;
     }
 
     @Override
     public int getSizeInventory() {
+        // Code coverage 17/05/2021 non utiliser | 100% de surcharge
         return 3;
     }
 
@@ -72,6 +79,7 @@ public abstract class TileEntityProxy extends TileEntity implements ISidedInvent
 
     @Override
     public ItemStack getStackInSlotOnClosing(int position) {
+        // Code coverage 17/05/2021 non utiliser ??
         if (this.itemStacks[position] != null) {
             ItemStack itemStack = this.itemStacks[position];
             this.itemStacks[position] = null;
@@ -84,6 +92,7 @@ public abstract class TileEntityProxy extends TileEntity implements ISidedInvent
 
     @Override
     public void setInventorySlotContents(int position, ItemStack itemStack) {
+        // Code coverage 17/05/2021 non utiliser | 100% de surcharge
         this.itemStacks[position] = itemStack;
 
         if (itemStack != null && itemStack.stackSize > this.getInventoryStackLimit()) {
@@ -93,6 +102,7 @@ public abstract class TileEntityProxy extends TileEntity implements ISidedInvent
 
     @Override
     public String getInventoryName() {
+        // Code coverage 17/05/2021 non utiliser ??
         return this.hasCustomInventoryName() ? this.name : "Undefined Name";
     }
 
@@ -124,8 +134,8 @@ public abstract class TileEntityProxy extends TileEntity implements ISidedInvent
 
         this.progressValue = tagCompound.getInteger("progress");
 
-        if (tagCompound.hasKey("CustomName", 8)) {
-            this.name = tagCompound.getString("CustomName");
+        if (tagCompound.hasKey(NBT_CUSTOM_NAME, 8)) {
+            this.name = tagCompound.getString(NBT_CUSTOM_NAME);
         }
     }
 
@@ -136,7 +146,7 @@ public abstract class TileEntityProxy extends TileEntity implements ISidedInvent
         tagCompound.setInteger("progress", this.progressValue);
 
         if (this.hasCustomInventoryName()) {
-            tagCompound.setString("CustomName", this.name);
+            tagCompound.setString(NBT_CUSTOM_NAME, this.name);
         }
 
         NBTTagList tagList = new NBTTagList();
@@ -194,11 +204,13 @@ public abstract class TileEntityProxy extends TileEntity implements ISidedInvent
 
     @Override
     public void openInventory() {
+        // Code coverage 17/05/2021 non utiliser ??
         updateEntity();
     }
 
     @Override
     public void closeInventory() {
+        // Code coverage 17/05/2021 non utiliser ??
         updateEntity();
     }
 

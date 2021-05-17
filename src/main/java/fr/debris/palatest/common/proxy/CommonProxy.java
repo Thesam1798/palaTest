@@ -26,69 +26,89 @@ public class CommonProxy {
         }
     };
 
-    public static BlockProxy frameGrinder;
-    public static BlockProxy casingGrinder;
+    protected static BlockProxy frameGrinder;
+    protected static BlockProxy casingGrinder;
 
-    public static MachineProxy waterGrinder;
+    protected static MachineProxy waterGrinder;
 
-    public static ItemProxy diamondBigSword;
-    public static ItemProxy diamondBigSwordModel;
-    public static ItemProxy diamondModel;
+    protected static ItemProxy diamondBigSword;
+    protected static ItemProxy diamondBigSwordModel;
+    protected static ItemProxy diamondModel;
 
-    public static GuiProxy waterGrinderGui;
-
-
-    protected static void initRecipe() {
-        log("Init Recipe : Start");
-        log("Init Recipe : End");
+    public static BlockProxy getFrameGrinder() {
+        return frameGrinder;
     }
 
-    protected static void initItems() {
-        log("Init Items : Start");
+    public static BlockProxy getCasingGrinder() {
+        return casingGrinder;
+    }
+
+    public static MachineProxy getWaterGrinder() {
+        return waterGrinder;
+    }
+
+    public static ItemProxy getDiamondBigSword() {
+        return diamondBigSword;
+    }
+
+    public static ItemProxy getDiamondBigSwordModel() {
+        return diamondBigSwordModel;
+    }
+
+    public static ItemProxy getDiamondModel() {
+        return diamondModel;
+    }
+
+    protected static void setupRecipe() {
+        log("Setup recipe is empty");
+    }
+
+    protected static void setupItems() {
         diamondBigSword = new ItemProxy("diamond_big_sword");
         diamondBigSwordModel = new ItemProxy("modl_sword");
         diamondModel = new ItemProxy("modl_diamond");
-        log("Init Items : End");
     }
 
-    protected static void initBlocks() {
-        log("Init BLock : Start");
+    protected static void setupBlocks() {
         casingGrinder = new BlockProxy(Material.ground, "casing_grinder");
         frameGrinder = new BlockProxy(Material.ground, "frame_grinder");
-        log("Init BLock : End");
     }
 
-    protected static void initMachine() {
-        log("Init Machine : Start");
-
+    protected static void setupMachine() {
+        String waterGrinderName = "water_grinder";
         TileEntityProxy waterEntity = new TileEntityWaterGrinder();
-        waterEntity.setName("water_grinder");
+        waterEntity.setName(waterGrinderName);
 
         waterGrinder = new MachineProxy(
-                "water_grinder",
+                waterGrinderName,
                 "casing_grinder",
-                "water_grinder",
+                waterGrinderName,
                 0,
                 waterGrinder,
-                false,
+                true,
                 Block.soundTypeMetal,
                 true,
                 waterEntity
         );
-
-        log("Init Machine : End");
     }
 
-    public void register() {
-        log("Common Proxy register");
+    public void init() {
+        setupRecipe();
+        setupNetworkGui();
+    }
 
-        NetworkRegistry.INSTANCE.registerGuiHandler(Main.instance, new GuiHandler());
-
+    public void setupNetworkGui() {
+        NetworkRegistry.INSTANCE.registerGuiHandler(Main.getInstance(), new GuiHandler());
         GameRegistry.registerTileEntity(TileEntityWaterGrinder.class, Reference.MOD_ID + "TileEntityWaterGrinder");
+    }
 
-        initRecipe();
-        initItems();
-        initMachine();
-        initBlocks();
+    public void preInit() {
+        setupItems();
+        setupMachine();
+        setupBlocks();
+    }
+
+    public void postInit() {
+        log("Post Init is empty");
     }
 }
