@@ -33,7 +33,7 @@ public class CommonProxy {
 
     protected static ItemProxy diamondBigSword;
     protected static ItemProxy diamondBigSwordModel;
-    protected static ItemProxy diamondModel;
+    protected static ItemProxy diamondPlate;
 
     public static BlockProxy getFrameGrinder() {
         return frameGrinder;
@@ -55,8 +55,8 @@ public class CommonProxy {
         return diamondBigSwordModel;
     }
 
-    public static ItemProxy getDiamondModel() {
-        return diamondModel;
+    public static ItemProxy getDiamondPlate() {
+        return diamondPlate;
     }
 
     protected static void setupRecipe() {
@@ -66,7 +66,7 @@ public class CommonProxy {
     protected static void setupItems() {
         diamondBigSword = new ItemProxy("diamond_big_sword");
         diamondBigSwordModel = new ItemProxy("modl_sword");
-        diamondModel = new ItemProxy("modl_diamond");
+        diamondPlate = new ItemProxy("modl_diamond");
     }
 
     protected static void setupBlocks() {

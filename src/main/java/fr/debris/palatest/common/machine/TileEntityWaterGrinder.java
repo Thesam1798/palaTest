@@ -236,7 +236,7 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
 
             if (model == null || plate == null) return;
 
-            if (CommonProxy.getDiamondBigSwordModel().equals(model.getItem()) && CommonProxy.getDiamondModel().equals(plate.getItem())) {
+            if (CommonProxy.getDiamondBigSwordModel().equals(model.getItem()) && CommonProxy.getDiamondPlate().equals(plate.getItem())) {
                 itemStack = new ItemStack(CommonProxy.getDiamondBigSword());
             }
 
@@ -280,7 +280,7 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
         } else {
             ItemStack itemStack = null;
 
-            if (this.getModel().getItem().equals(CommonProxy.getDiamondBigSwordModel()) && this.getPlate().getItem().equals(CommonProxy.getDiamondModel())) {
+            if (this.getModel().getItem().equals(CommonProxy.getDiamondBigSwordModel()) && this.getPlate().getItem().equals(CommonProxy.getDiamondPlate())) {
                 itemStack = new ItemStack(CommonProxy.getDiamondBigSword());
             }
 
@@ -308,6 +308,17 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
     }
 
     /**
+     * Permet de savoir le nombres d'items posible dans un slot
+     *
+     * @param position le slot
+     * @return le nombres d'items
+     */
+    @Override
+    public int getInventoryStackLimit(int position) {
+        return position == 1 ? 64 : 1;
+    }
+
+    /**
      * Retourne si l'item peut entrée dans le slot
      *
      * @param position la position
@@ -316,8 +327,25 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
      */
     @Override
     public boolean isItemValidForSlot(int position, ItemStack stack) {
-        // Code coverage 17/05/2021 non utiliser ??
         if (position == 1 && stack.getItem().equals(Items.diamond)) return true;
-        return position == 0 && stack.getItem().equals(CommonProxy.getDiamondBigSwordModel());
+        if (position == 0 && stack.getItem().equals(CommonProxy.getDiamondPlate()) && (getPlate() == null || getPlate().stackSize == 0))
+            return true;
+        return position == 3 && stack.getItem().equals(CommonProxy.getDiamondBigSwordModel()) && (getModel() == null || getModel().stackSize == 0);
+    }
+
+    /**
+     * Retourne la position ou l'item peut entrer
+     *
+     * @param stack le stack
+     * @return le slot
+     */
+    public int getSlotItemValid(ItemStack stack) {
+        for (int i = 0; i < this.getSizeInventory(); i++) {
+            if (this.isItemValidForSlot(i, stack)) {
+                return i;
+            }
+        }
+
+        return -1;
     }
 }

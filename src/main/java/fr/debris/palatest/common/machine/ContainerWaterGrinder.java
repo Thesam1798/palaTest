@@ -6,6 +6,7 @@ package fr.debris.palatest.common.machine;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import fr.debris.palatest.common.proxy.TileEntityProxy;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;
@@ -13,7 +14,6 @@ import net.minecraft.inventory.ICrafting;
 import net.minecraft.inventory.Slot;
 import net.minecraft.inventory.SlotFurnace;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.crafting.FurnaceRecipes;
 
 public class ContainerWaterGrinder extends Container {
 
@@ -34,10 +34,10 @@ public class ContainerWaterGrinder extends Container {
         // p_i1824_2_ : Slot Id
         // p_i1824_3_ : X in gui
         // p_i1824_4_ : Y in gui
-        this.addSlotToContainer(new Slot(tileEntityWaterGrinder, 0, 116, 53));
-        this.addSlotToContainer(new Slot(tileEntityWaterGrinder, 1, 8, 53));
-        this.addSlotToContainer(new Slot(tileEntityWaterGrinder, 3, 116, 25));
+        this.addSlotToContainer(newSlot(tileEntityWaterGrinder, 0, 116, 53));
+        this.addSlotToContainer(newSlot(tileEntityWaterGrinder, 1, 8, 53));
         this.addSlotToContainer(new SlotFurnace(inventory.player, tileEntityWaterGrinder, 2, 53, 26));
+        this.addSlotToContainer(newSlot(tileEntityWaterGrinder, 3, 116, 25));
 
         int i;
 
@@ -52,6 +52,29 @@ public class ContainerWaterGrinder extends Container {
         for (i = 0; i < 9; i++) {
             this.addSlotToContainer(new Slot(inventory, i, 8 + i * 18, 142));
         }
+    }
+
+    /**
+     * Permet de créer un slot avec la vérification via l'inventaire
+     *
+     * @param entityProxy TileEntityProxy
+     * @param slotId      id du slot
+     * @param x           x
+     * @param y           y
+     * @return boolean
+     */
+    private Slot newSlot(final TileEntityProxy entityProxy, int slotId, int x, int y) {
+        return new Slot(entityProxy, slotId, x, y) {
+            @Override
+            public boolean isItemValid(ItemStack stack) {
+                return this.inventory.isItemValidForSlot(this.getSlotIndex(), stack);
+            }
+
+            @Override
+            public int getSlotStackLimit() {
+                return ((TileEntityProxy) (this.inventory)).getInventoryStackLimit(this.getSlotIndex());
+            }
+        };
     }
 
     /**
@@ -128,7 +151,6 @@ public class ContainerWaterGrinder extends Container {
      */
     @Override
     // SonarLint : java:S3776 : Cognitive Complexity of methods should not be too hig
-    // Code coverage 17/05/2021 utiliser moins de 50%
     public ItemStack transferStackInSlot(EntityPlayer player, int position) {
         ItemStack itemStack = null;
         Slot slot = (Slot) this.inventorySlots.get(position);
@@ -137,42 +159,49 @@ public class ContainerWaterGrinder extends Container {
             ItemStack itemStack1 = slot.getStack();
             itemStack = itemStack1.copy();
 
-            if (position == 2) {
-                if (!this.mergeItemStack(itemStack1, 3, 39, true)) {
-                    return null;
-                }
+            // provenance de l'inventaire
+            if (position >= 4) {
 
-                slot.onSlotChange(itemStack1, itemStack);
-            } else if (position != 1 && position != 0) {
-                if (FurnaceRecipes.smelting().getSmeltingResult(itemStack1) != null) {
-                    if (!this.mergeItemStack(itemStack1, 0, 1, false)) {
+                // Récupération du slot de destination
+                int validSlot = this.tileEntity.getSlotItemValid(itemStack1);
+
+                if (validSlot != -1) {
+
+                    int limit = this.tileEntity.getInventoryStackLimit(validSlot);
+                    ItemStack itemStack2 = itemStack1;
+
+                    if (limit < itemStack1.stackSize) {
+                        itemStack2 = itemStack1.splitStack(limit);
+                        slot.onSlotChange(itemStack2, itemStack1);
+                    }
+
+                    // Si il a été possible de mouve l'item
+                    if (this.mergeItemStack(itemStack2, validSlot, validSlot + 1, true)) {
+                        slot.onSlotChange(itemStack2, itemStack);
+                    } else {
                         return null;
                     }
-                } else if (TileEntityWaterGrinder.isItemFuel(itemStack1)) {
-                    if (!this.mergeItemStack(itemStack1, 1, 2, false)) {
-                        return null;
-                    }
-                } else if (position < 30) {
-                    if (!this.mergeItemStack(itemStack1, 30, 29, false)) {
-                        return null;
-                    }
-                } else if (position < 39 && !this.mergeItemStack(itemStack1, 3, 30, false)) {
-                    return null;
                 }
-            } else if (!this.mergeItemStack(itemStack1, 3, 39, false)) {
-                return null;
+            } else {
+                // Déplacement des items de la machine vers l'inventaire
+                if (!this.mergeItemStack(itemStack1, 4, this.inventorySlots.size(), true)) return null;
+                slot.onSlotChange(itemStack1, itemStack);
             }
 
+            // Suppression si cela est a 0
+            // Sinon update des slot
             if (itemStack1.stackSize == 0) {
                 slot.putStack(null);
             } else {
                 slot.onSlotChanged();
             }
 
+            // Si les stack sont les meme, pas d'update
             if (itemStack1.stackSize == itemStack.stackSize) {
                 return null;
             }
 
+            // Mark slot is Dirty
             slot.onPickupFromSlot(player, itemStack1);
         }
 

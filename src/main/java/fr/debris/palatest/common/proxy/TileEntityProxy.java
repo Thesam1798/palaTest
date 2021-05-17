@@ -201,6 +201,7 @@ public abstract class TileEntityProxy extends TileEntity implements ISidedInvent
         }
 
         this.progressValue = tagCompound.getInteger("progress");
+        this.inProgress = tagCompound.getBoolean("inProgress");
 
         if (tagCompound.hasKey(NBT_CUSTOM_NAME, 8)) {
             this.name = tagCompound.getString(NBT_CUSTOM_NAME);
@@ -217,6 +218,7 @@ public abstract class TileEntityProxy extends TileEntity implements ISidedInvent
         super.writeToNBT(tagCompound);
 
         tagCompound.setInteger("progress", this.progressValue);
+        tagCompound.setBoolean("inProgress", this.inProgress);
 
         if (this.hasCustomInventoryName()) {
             tagCompound.setString(NBT_CUSTOM_NAME, this.name);
@@ -345,9 +347,18 @@ public abstract class TileEntityProxy extends TileEntity implements ISidedInvent
 
     /**
      * Renvoie si la machine est en fonctionnement
+     *
      * @return boolean
      */
     public boolean isWorked() {
         return this.progressValue > 0;
     }
+
+    /**
+     * Permet de savoir le nombres d'items posible dans un slot
+     *
+     * @param position le slot
+     * @return le nombres d'items
+     */
+    public abstract int getInventoryStackLimit(int position);
 }
