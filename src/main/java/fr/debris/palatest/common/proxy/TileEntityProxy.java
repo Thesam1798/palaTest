@@ -13,19 +13,23 @@ import net.minecraft.tileentity.TileEntity;
 
 public abstract class TileEntityProxy extends TileEntity implements ISidedInventory {
 
-    // SonarLint Correction : java:S1192 : String literals should not be duplicated
     public static final String NBT_CUSTOM_NAME = "CustomName";
-    protected static final int[] slotsTop = new int[]{0};
-    protected static final int[] slotBottom = new int[]{2};
-    protected static final int[] slotSides = new int[]{1};
-    // SonarLint : java:S1104 : Class variable fields should not have public accessibility
-    public int progressValue;
+    protected int[] slotsTop = new int[]{0};
+    protected int[] slotBottom = new int[]{2};
+    protected int[] slotSides = new int[]{1};
+    protected int progressValue;
     protected boolean inProgress = false;
 
     protected ItemStack[] itemStacks;
     protected String name;
 
-    protected abstract int getItemBurnTime(ItemStack itemStack);
+    /**
+     * Permet de savoir combien de temps (tiks) il faut pour smelt l'item
+     *
+     * @param stack le stack d'items
+     * @return int
+     */
+    protected abstract int getItemBurnTime(ItemStack stack);
 
     /**
      * Renvoie un tableau contenant les indices des emplacements accessibles par automatisation du côté donné de ce bloc.
@@ -361,4 +365,22 @@ public abstract class TileEntityProxy extends TileEntity implements ISidedInvent
      * @return le nombres d'items
      */
     public abstract int getInventoryStackLimit(int position);
+
+    /**
+     * Get ProgressValue
+     *
+     * @return int
+     */
+    public int getProgressValue() {
+        return progressValue;
+    }
+
+    /**
+     * Set ProgressValue
+     *
+     * @param progressValue int
+     */
+    public void setProgressValue(int progressValue) {
+        this.progressValue = progressValue;
+    }
 }

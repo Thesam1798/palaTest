@@ -2,10 +2,11 @@
  * @author Alexandre Debris <alexandre@debris.ovh>
  * @date 16/05/2021 : 13:39
  */
-package fr.debris.palatest.common.machine;
+package fr.debris.palatest.common.machine.watergrinder.gui;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import fr.debris.palatest.common.machine.watergrinder.TileEntityWaterGrinder;
 import fr.debris.palatest.common.proxy.TileEntityProxy;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -86,8 +87,8 @@ public class ContainerWaterGrinder extends Container {
     public void addCraftingToCrafters(ICrafting craft) {
         super.addCraftingToCrafters(craft);
 
-        craft.sendProgressBarUpdate(this, 0, this.tileEntity.diamondValue);
-        craft.sendProgressBarUpdate(this, 1, this.tileEntity.progressValue);
+        craft.sendProgressBarUpdate(this, 0, this.tileEntity.getDiamondValue());
+        craft.sendProgressBarUpdate(this, 1, this.tileEntity.getProgressValue());
     }
 
     /**
@@ -100,16 +101,16 @@ public class ContainerWaterGrinder extends Container {
         for (Object crafter : this.crafters) {
             ICrafting craft = (ICrafting) crafter;
 
-            if (this.lastCookTime != this.tileEntity.diamondValue) {
-                craft.sendProgressBarUpdate(this, 0, this.tileEntity.diamondValue);
+            if (this.lastCookTime != this.tileEntity.getDiamondValue()) {
+                craft.sendProgressBarUpdate(this, 0, this.tileEntity.getDiamondValue());
             }
 
-            if (this.lastBurnTime != this.tileEntity.progressValue) {
-                craft.sendProgressBarUpdate(this, 1, this.tileEntity.progressValue);
+            if (this.lastBurnTime != this.tileEntity.getProgressValue()) {
+                craft.sendProgressBarUpdate(this, 1, this.tileEntity.getProgressValue());
             }
 
-            this.lastBurnTime = this.tileEntity.progressValue;
-            this.lastCookTime = this.tileEntity.diamondValue;
+            this.lastBurnTime = this.tileEntity.getProgressValue();
+            this.lastCookTime = this.tileEntity.getDiamondValue();
         }
     }
 
@@ -123,11 +124,11 @@ public class ContainerWaterGrinder extends Container {
     @SideOnly(Side.CLIENT)
     public void updateProgressBar(int type, int value) {
         if (type == 0) {
-            this.tileEntity.diamondValue = value;
+            this.tileEntity.setDiamondValue(value);
         }
 
         if (type == 1) {
-            this.tileEntity.progressValue = value;
+            this.tileEntity.setProgressValue(value);
         }
     }
 
@@ -150,60 +151,56 @@ public class ContainerWaterGrinder extends Container {
      * @return un itemStack
      */
     @Override
-    // SonarLint : java:S3776 : Cognitive Complexity of methods should not be too hig
     public ItemStack transferStackInSlot(EntityPlayer player, int position) {
-        ItemStack itemStack = null;
+        ItemStack itemStack;
         Slot slot = (Slot) this.inventorySlots.get(position);
 
-        if (slot != null && slot.getHasStack()) {
-            ItemStack itemStack1 = slot.getStack();
-            itemStack = itemStack1.copy();
+        if (slot == null || !slot.getHasStack())
+            return null;
 
-            // provenance de l'inventaire
-            if (position >= 4) {
+        ItemStack itemStack1 = slot.getStack();
+        itemStack = itemStack1.copy();
 
-                // Récupération du slot de destination
-                int validSlot = this.tileEntity.getSlotItemValid(itemStack1);
+        // provenance de l'inventaire >= 4
+        if (position >= 4) {
 
-                if (validSlot != -1) {
+            // Récupération du slot de destination
+            int validSlot = this.tileEntity.getSlotItemValid(itemStack1);
 
-                    int limit = this.tileEntity.getInventoryStackLimit(validSlot);
-                    ItemStack itemStack2 = itemStack1;
+            // Si le slot est invalid return null
+            if (validSlot == -1) return null;
 
-                    if (limit < itemStack1.stackSize) {
-                        itemStack2 = itemStack1.splitStack(limit);
-                        slot.onSlotChange(itemStack2, itemStack1);
-                    }
+            // Récupération du maximum d'item et division
+            int limit = this.tileEntity.getInventoryStackLimit(validSlot);
+            ItemStack itemStack2 = itemStack1;
 
-                    // Si il a été possible de mouve l'item
-                    if (this.mergeItemStack(itemStack2, validSlot, validSlot + 1, true)) {
-                        slot.onSlotChange(itemStack2, itemStack);
-                    } else {
-                        return null;
-                    }
-                }
-            } else {
-                // Déplacement des items de la machine vers l'inventaire
-                if (!this.mergeItemStack(itemStack1, 4, this.inventorySlots.size(), true)) return null;
-                slot.onSlotChange(itemStack1, itemStack);
-            }
+            if (limit < itemStack1.stackSize)
+                itemStack2 = itemStack1.splitStack(limit);
 
-            // Suppression si cela est a 0
-            // Sinon update des slot
-            if (itemStack1.stackSize == 0) {
-                slot.putStack(null);
-            } else {
-                slot.onSlotChanged();
-            }
+            // Si il n'a pas été possible de mouve l'item return null
+            if (!this.mergeItemStack(itemStack2, validSlot, validSlot + 1, true)) return null;
 
-            // Si les stack sont les meme, pas d'update
-            if (itemStack1.stackSize == itemStack.stackSize) {
-                return null;
-            }
+            // Update des slot
+            slot.onSlotChange(itemStack2, itemStack1);
+            slot.onSlotChange(itemStack2, itemStack);
+        } else {
+            // Si il n'a pas été possible de mouve l'item return null
+            if (!this.mergeItemStack(itemStack1, 4, this.inventorySlots.size(), true)) return null;
 
-            // Mark slot is Dirty
-            slot.onPickupFromSlot(player, itemStack1);
+            // Update des slot
+            slot.onSlotChange(itemStack1, itemStack);
         }
+
+        // Si les stack on la meme taille, pas d'update
+        if (itemStack1.stackSize == itemStack.stackSize)
+            return null;
+
+        // Suppression du slot si la taille est a 0
+        if (itemStack1.stackSize == 0) slot.putStack(null);
+
+        // Mark slot is Dirty
+        slot.onSlotChanged();
+        slot.onPickupFromSlot(player, itemStack1);
 
         return itemStack;
     }

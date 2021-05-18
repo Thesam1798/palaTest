@@ -9,8 +9,8 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import fr.debris.palatest.Main;
 import fr.debris.palatest.common.GuiHandler;
 import fr.debris.palatest.common.Reference;
-import fr.debris.palatest.common.machine.TileEntityWaterGrinder;
-import net.minecraft.block.Block;
+import fr.debris.palatest.common.machine.watergrinder.BlockWaterGrinder;
+import fr.debris.palatest.common.machine.watergrinder.TileEntityWaterGrinder;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
@@ -35,30 +35,6 @@ public class CommonProxy {
     protected static ItemProxy diamondBigSwordModel;
     protected static ItemProxy diamondPlate;
 
-    public static BlockProxy getFrameGrinder() {
-        return frameGrinder;
-    }
-
-    public static BlockProxy getCasingGrinder() {
-        return casingGrinder;
-    }
-
-    public static MachineProxy getWaterGrinder() {
-        return waterGrinder;
-    }
-
-    public static ItemProxy getDiamondBigSword() {
-        return diamondBigSword;
-    }
-
-    public static ItemProxy getDiamondBigSwordModel() {
-        return diamondBigSwordModel;
-    }
-
-    public static ItemProxy getDiamondPlate() {
-        return diamondPlate;
-    }
-
     protected static void setupRecipe() {
         log("Setup recipe is empty");
     }
@@ -75,21 +51,35 @@ public class CommonProxy {
     }
 
     protected static void setupMachine() {
-        String waterGrinderName = "water_grinder";
-        TileEntityProxy waterEntity = new TileEntityWaterGrinder();
-        waterEntity.setName(waterGrinderName);
+        new BlockWaterGrinder().register();
+    }
 
-        waterGrinder = new MachineProxy(
-                waterGrinderName,
-                "casing_grinder",
-                waterGrinderName,
-                0,
-                waterGrinder,
-                true,
-                Block.soundTypeMetal,
-                true,
-                waterEntity
-        );
+    public static BlockProxy getFrameGrinder() {
+        return frameGrinder;
+    }
+
+    public static BlockProxy getCasingGrinder() {
+        return casingGrinder;
+    }
+
+    public static MachineProxy getWaterGrinder() {
+        return waterGrinder;
+    }
+
+    public static void setWaterGrinder(MachineProxy waterGrinder) {
+        CommonProxy.waterGrinder = waterGrinder;
+    }
+
+    public static ItemProxy getDiamondBigSword() {
+        return diamondBigSword;
+    }
+
+    public static ItemProxy getDiamondBigSwordModel() {
+        return diamondBigSwordModel;
+    }
+
+    public static ItemProxy getDiamondPlate() {
+        return diamondPlate;
     }
 
     public void init() {

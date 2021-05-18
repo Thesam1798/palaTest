@@ -35,6 +35,7 @@ public class MachineProxy extends BlockContainer {
     private final boolean animate;
     private final TileEntityProxy entity;
     private final Random random = new Random();
+    private final String particule;
     @SideOnly(Side.CLIENT)
     private IIcon front;
 
@@ -43,24 +44,20 @@ public class MachineProxy extends BlockContainer {
             String blockTexture,
             String frontTextureName,
             int guiInstance,
-            Block blockOnDrop,
             boolean animate,
-            SoundType sound,
+            String particule,
             boolean tab,
-            TileEntityProxy entity
-    ) {
+            TileEntityProxy entity) {
         super(Material.iron);
         this.blockTexture = blockTexture;
         this.frontTextureName = frontTextureName;
         this.guiInstance = guiInstance;
-        this.blockOnDrop = blockOnDrop;
+        this.particule = particule;
+        this.blockOnDrop = this;
         this.animate = animate;
         this.entity = entity;
 
         this.setBlockName(name);
-        this.setHardness(5.0F);
-        this.setResistance(10.0F);
-        this.setStepSound(sound);
 
         if (tab) this.setCreativeTab(CommonProxy.palaTab);
 
@@ -78,46 +75,41 @@ public class MachineProxy extends BlockContainer {
      * @param meta  les meta du block
      */
     @Override
-    // SonarLint : java:S3776 : Cognitive Complexity of methods should not be too hig
     public void breakBlock(World world, int x, int y, int z, Block block, int meta) {
-        if (this.entity != null) {
-            TileEntityProxy tileEntity = (TileEntityProxy) world.getTileEntity(x, y, z);
-            if (tileEntity != null) {
-                for (int i = 0; i < tileEntity.getSizeInventory(); ++i) {
-                    ItemStack itemStack = tileEntity.getStackInSlot(i);
+        if (this.entity == null) return;
 
-                    if (itemStack != null) {
-                        float f1 = this.random.nextFloat() * 0.6F + 0.1F;
-                        float f2 = this.random.nextFloat() * 0.6F + 0.1F;
-                        float f3 = this.random.nextFloat() * 0.6F + 0.1F;
+        TileEntityProxy tileEntity = (TileEntityProxy) world.getTileEntity(x, y, z);
+        if (tileEntity != null) {
+            for (int i = 0; i < tileEntity.getSizeInventory(); ++i) {
+                ItemStack itemStack = tileEntity.getStackInSlot(i);
 
-                        while (itemStack.stackSize > 0) {
-                            int j = this.random.nextInt(21) + 10;
+                if (itemStack == null) continue;
 
-                            if (j > itemStack.stackSize) {
-                                j = itemStack.stackSize;
-                            }
+                float f1 = this.random.nextFloat() * 0.6F + 0.1F;
+                float f2 = this.random.nextFloat() * 0.6F + 0.1F;
+                float f3 = this.random.nextFloat() * 0.6F + 0.1F;
 
-                            itemStack.stackSize -= j;
-                            EntityItem entityItem = new EntityItem(world, x + f1, y + f2, z + f3, new ItemStack(itemStack.getItem(), j, itemStack.getItemDamage()));
+                while (itemStack.stackSize > 0) {
+                    int j = Math.min(this.random.nextInt(21) + 10, itemStack.stackSize);
 
-                            if (itemStack.hasTagCompound()) {
-                                entityItem.getEntityItem().setTagCompound((NBTTagCompound) itemStack.getTagCompound().copy());
-                            }
+                    itemStack.stackSize -= j;
+                    EntityItem entityItem = new EntityItem(world, x + f1, y + f2, z + f3, new ItemStack(itemStack.getItem(), j, itemStack.getItemDamage()));
 
-                            float f4 = 0.025F;
-                            entityItem.motionX = this.random.nextGaussian() * f4;
-                            entityItem.motionY = this.random.nextGaussian() * f4 + 0.1F;
-                            entityItem.motionZ = this.random.nextGaussian() * f4;
-
-                            world.spawnEntityInWorld(entityItem);
-                        }
+                    if (itemStack.hasTagCompound()) {
+                        entityItem.getEntityItem().setTagCompound((NBTTagCompound) itemStack.getTagCompound().copy());
                     }
-                    world.func_147453_f(x, y, z, block);
+
+                    float f4 = 0.025F;
+                    entityItem.motionX = this.random.nextGaussian() * f4;
+                    entityItem.motionY = this.random.nextGaussian() * f4 + 0.1F;
+                    entityItem.motionZ = this.random.nextGaussian() * f4;
+
+                    world.spawnEntityInWorld(entityItem);
                 }
+                world.func_147453_f(x, y, z, block);
             }
-            super.breakBlock(world, x, y, z, block, meta);
         }
+        super.breakBlock(world, x, y, z, block, meta);
     }
 
     /**
@@ -127,7 +119,7 @@ public class MachineProxy extends BlockContainer {
      * @param x      X
      * @param y      Y
      * @param z      Z
-     * @param random
+     * @param random Random
      */
     @Override
     @SideOnly(Side.CLIENT)
@@ -142,20 +134,14 @@ public class MachineProxy extends BlockContainer {
                 float mouve = 0.52F;
                 float x2 = random.nextFloat() * 0.6F - 0.3F;
 
-                String smoke = "smoke";
-                String flame = "flame";
                 if (direction == 4) {
-                    world.spawnParticle(smoke, x1 - mouve, y1, z1 + x2, 0.0D, 0.0D, 0.0D);
-                    world.spawnParticle(flame, x1 - mouve, y1, z1 + x2, 0.0D, 0.0D, 0.0D);
+                    world.spawnParticle(particule, x1 - mouve, y1, z1 + x2, 0.0D, 0.0D, 0.0D);
                 } else if (direction == 5) {
-                    world.spawnParticle(smoke, x1 + mouve, y1, z1 + x2, 0.0D, 0.0D, 0.0D);
-                    world.spawnParticle(flame, x1 + mouve, y1, z1 + x2, 0.0D, 0.0D, 0.0D);
+                    world.spawnParticle(particule, x1 + mouve, y1, z1 + x2, 0.0D, 0.0D, 0.0D);
                 } else if (direction == 2) {
-                    world.spawnParticle(smoke, x1 + x2, y1, z1 - mouve, 0.0D, 0.0D, 0.0D);
-                    world.spawnParticle(flame, x1 + x2, y1, z1 - mouve, 0.0D, 0.0D, 0.0D);
+                    world.spawnParticle(particule, x1 + x2, y1, z1 - mouve, 0.0D, 0.0D, 0.0D);
                 } else if (direction == 3) {
-                    world.spawnParticle(smoke, x1 + x2, y1, z1 + mouve, 0.0D, 0.0D, 0.0D);
-                    world.spawnParticle(flame, x1 + x2, y1, z1 + mouve, 0.0D, 0.0D, 0.0D);
+                    world.spawnParticle(particule, x1 + x2, y1, z1 + mouve, 0.0D, 0.0D, 0.0D);
                 }
             }
         }
@@ -188,7 +174,15 @@ public class MachineProxy extends BlockContainer {
      */
     @Override
     public IIcon getIcon(int side, int meta) {
-        if (meta == side) {
+        // Side 0 : Bottom ?
+        // Side 1 : Top
+        // Side 2 : Back ?
+        // Side 3 : Right
+        // Side 4 : Left
+
+        if (side == 4 && meta == 0) {
+            return this.front;
+        } else if (meta == side) {
             return this.front;
         } else {
             return this.blockIcon;

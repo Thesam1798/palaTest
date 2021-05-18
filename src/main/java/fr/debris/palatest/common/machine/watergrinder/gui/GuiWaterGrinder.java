@@ -2,11 +2,12 @@
  * @author Alexandre Debris <alexandre@debris.ovh>
  * @date 16/05/2021 : 13:39
  */
-package fr.debris.palatest.common.machine;
+package fr.debris.palatest.common.machine.watergrinder.gui;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import fr.debris.palatest.common.Reference;
+import fr.debris.palatest.common.machine.watergrinder.TileEntityWaterGrinder;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -34,6 +35,10 @@ public class GuiWaterGrinder extends GuiContainer {
     @Override
     protected void drawGuiContainerForegroundLayer(int x, int y) {
         String name = I18n.format(String.format("machine.%s", this.tileEntity.getName()));
+
+        if (name.contains("error:")) {
+            name = this.tileEntity.getName();
+        }
 
         this.fontRendererObj.drawString(
                 name,

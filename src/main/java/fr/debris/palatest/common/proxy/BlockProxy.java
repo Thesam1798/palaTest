@@ -22,8 +22,8 @@ public class BlockProxy extends Block {
 
         this.setBlockName(name);
         this.setCreativeTab(CommonProxy.palaTab);
-        this.setHardness(5.0F);
-        this.setResistance(10.0F);
+        this.setHardness(3.0F);
+        this.setResistance(5.0F);
         this.setStepSound(soundTypeStone);
 
 

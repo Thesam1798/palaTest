@@ -5,9 +5,9 @@
 package fr.debris.palatest.common;
 
 import cpw.mods.fml.common.network.IGuiHandler;
-import fr.debris.palatest.common.machine.ContainerWaterGrinder;
-import fr.debris.palatest.common.machine.GuiWaterGrinder;
-import fr.debris.palatest.common.machine.TileEntityWaterGrinder;
+import fr.debris.palatest.common.machine.watergrinder.TileEntityWaterGrinder;
+import fr.debris.palatest.common.machine.watergrinder.gui.ContainerWaterGrinder;
+import fr.debris.palatest.common.machine.watergrinder.gui.GuiWaterGrinder;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
