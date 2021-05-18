@@ -5,8 +5,8 @@
 package fr.debris.palatest.common.machine.watergrinder;
 
 import fr.debris.palatest.common.proxy.CommonProxy;
-import fr.debris.palatest.common.proxy.MachineProxy;
-import fr.debris.palatest.common.proxy.TileEntityProxy;
+import fr.debris.palatest.common.proxy.block.MachineProxy;
+import fr.debris.palatest.common.proxy.gui.TileEntityProxy;
 import net.minecraft.block.Block;
 
 public class BlockWaterGrinder {

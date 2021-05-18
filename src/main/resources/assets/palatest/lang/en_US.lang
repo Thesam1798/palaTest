@@ -13,3 +13,6 @@ item.modl_diamond.name=Plate
 
 # Tabs
 itemGroup.palaTest=PalaTest
+
+# Entity
+entity.golem.name=Water Golem

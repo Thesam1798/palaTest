@@ -7,7 +7,7 @@ package fr.debris.palatest.common.machine.watergrinder.gui;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import fr.debris.palatest.common.machine.watergrinder.TileEntityWaterGrinder;
-import fr.debris.palatest.common.proxy.TileEntityProxy;
+import fr.debris.palatest.common.proxy.gui.TileEntityProxy;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.Container;

@@ -2,13 +2,15 @@
  * @author Alexandre Debris <alexandre@debris.ovh>
  * @date 15/05/2021 : 22:59
  */
-package fr.debris.palatest.common.proxy;
+package fr.debris.palatest.common.proxy.block;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import fr.debris.palatest.Main;
 import fr.debris.palatest.common.Reference;
+import fr.debris.palatest.common.proxy.CommonProxy;
+import fr.debris.palatest.common.proxy.gui.TileEntityProxy;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -205,7 +207,7 @@ public class MachineProxy extends BlockContainer {
      */
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int i1, float f1, float f2, float f3) {
-        player.openGui(Main.getInstance(), this.guiInstance, world, x, y, z);
+        player.openGui(Main.instance, this.guiInstance, world, x, y, z);
         return true;
     }
 

@@ -2,10 +2,11 @@
  * @author Alexandre Debris <alexandre@debris.ovh>
  * @date 15/05/2021 : 20:37
  */
-package fr.debris.palatest.common.proxy;
+package fr.debris.palatest.common.proxy.items;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 import fr.debris.palatest.common.Reference;
+import fr.debris.palatest.common.proxy.CommonProxy;
 import net.minecraft.client.renderer.texture.IIconRegister;
 
 public class ItemProxy extends net.minecraft.item.Item {

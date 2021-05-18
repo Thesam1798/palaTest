@@ -9,8 +9,14 @@ import cpw.mods.fml.common.registry.GameRegistry;
 import fr.debris.palatest.Main;
 import fr.debris.palatest.common.GuiHandler;
 import fr.debris.palatest.common.Reference;
+import fr.debris.palatest.common.entity.EntityGolem;
 import fr.debris.palatest.common.machine.watergrinder.BlockWaterGrinder;
 import fr.debris.palatest.common.machine.watergrinder.TileEntityWaterGrinder;
+import fr.debris.palatest.common.proxy.block.BlockProxy;
+import fr.debris.palatest.common.proxy.block.MachineProxy;
+import fr.debris.palatest.common.proxy.items.ItemProxy;
+import fr.debris.palatest.common.proxy.items.ItemSwordProxy;
+import fr.debris.palatest.common.proxy.material.MaterialProxy;
 import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
@@ -26,12 +32,15 @@ public class CommonProxy {
         }
     };
 
+    protected static Item.ToolMaterial grinderMaterial;
+
     protected static BlockProxy frameGrinder;
     protected static BlockProxy casingGrinder;
 
     protected static MachineProxy waterGrinder;
 
-    protected static ItemProxy diamondBigSword;
+    protected static ItemSwordProxy diamondBigSword;
+
     protected static ItemProxy diamondBigSwordModel;
     protected static ItemProxy diamondPlate;
 
@@ -40,9 +49,13 @@ public class CommonProxy {
     }
 
     protected static void setupItems() {
-        diamondBigSword = new ItemProxy("diamond_big_sword");
+        diamondBigSword = new ItemSwordProxy("diamond_big_sword", grinderMaterial);
         diamondBigSwordModel = new ItemProxy("modl_sword");
         diamondPlate = new ItemProxy("modl_diamond");
+    }
+
+    protected static void setupMaterial() {
+        grinderMaterial = MaterialProxy.newMaterial("Grinder Material", 3, 250, 10F, 5F, 0);
     }
 
     protected static void setupBlocks() {
@@ -70,7 +83,7 @@ public class CommonProxy {
         CommonProxy.waterGrinder = waterGrinder;
     }
 
-    public static ItemProxy getDiamondBigSword() {
+    public static ItemSwordProxy getDiamondBigSword() {
         return diamondBigSword;
     }
 
@@ -82,17 +95,24 @@ public class CommonProxy {
         return diamondPlate;
     }
 
+    public static Item.ToolMaterial getGrinderMaterial() {
+        return grinderMaterial;
+    }
+
     public void init() {
         setupRecipe();
         setupNetworkGui();
     }
 
     public void setupNetworkGui() {
-        NetworkRegistry.INSTANCE.registerGuiHandler(Main.getInstance(), new GuiHandler());
+        NetworkRegistry.INSTANCE.registerGuiHandler(Main.instance, new GuiHandler());
         GameRegistry.registerTileEntity(TileEntityWaterGrinder.class, Reference.MOD_ID + "TileEntityWaterGrinder");
     }
 
     public void preInit() {
+        new EntityProxy(EntityGolem.class, "golem", 0xEC4545, 0x001EFF);
+
+        setupMaterial();
         setupItems();
         setupMachine();
         setupBlocks();

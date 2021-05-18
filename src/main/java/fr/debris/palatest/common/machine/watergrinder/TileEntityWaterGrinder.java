@@ -6,11 +6,16 @@ package fr.debris.palatest.common.machine.watergrinder;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import fr.debris.palatest.common.entity.EntityGolem;
 import fr.debris.palatest.common.proxy.CommonProxy;
-import fr.debris.palatest.common.proxy.TileEntityProxy;
+import fr.debris.palatest.common.proxy.gui.TileEntityProxy;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.nbt.NBTTagList;
+
+import java.util.HashMap;
 
 public class TileEntityWaterGrinder extends TileEntityProxy {
 
@@ -19,10 +24,14 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
     protected int[] slotSides = new int[]{1};
     protected int diamondValue = 0;
     protected int maxDiamondValue = 100;
-    protected int smeltingDifficulty = 200;
+    protected int smeltingDifficulty = 1;
     protected int valueForOneDiamond = 1000;
     // 0 Plate, 1 Fuel, 2 Out, 3 Model
     protected ItemStack[] itemStacks = new ItemStack[4];
+
+    protected EntityGolem[] golems = new EntityGolem[5];
+    protected boolean spawnGolems = false;
+    protected boolean isGolemsValid = false;
 
     public TileEntityWaterGrinder() {
         super();
@@ -137,6 +146,24 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
         this.itemStacks = super.itemStacks;
         this.diamondValue = tagCompound.getInteger("DiamondValue");
         this.smeltingDifficulty = tagCompound.getInteger("SmeltingDifficulty");
+        this.spawnGolems = tagCompound.getBoolean("SpawnGolems");
+
+        NBTTagList tagList = tagCompound.getTagList("Golems", 10);
+        this.golems = new EntityGolem[this.golems.length];
+
+        for (int i = 0; i < tagList.tagCount(); ++i) {
+            NBTTagCompound tagCompound1 = tagList.getCompoundTagAt(i);
+            byte byte0 = tagCompound1.getByte("Id");
+
+            if (byte0 >= 0 && byte0 < this.golems.length) {
+                this.golems[byte0] = new EntityGolem(this.worldObj);
+                this.golems[byte0].getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(this.golems[byte0].getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue() * smeltingDifficulty);
+                this.golems[byte0].getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(this.golems[byte0].getEntityAttribute(SharedMonsterAttributes.maxHealth).getAttributeValue() * smeltingDifficulty);
+                this.golems[byte0].setPosition(this.xCoord, this.yCoord + 1.5, this.zCoord);
+                this.golems[byte0].onSpawnWithEgg(null);
+                this.golems[byte0].readFromNBT(tagCompound1);
+            }
+        }
     }
 
     /**
@@ -160,6 +187,20 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
         super.writeToNBT(tagCompound);
         tagCompound.setInteger("DiamondValue", this.diamondValue);
         tagCompound.setInteger("SmeltingDifficulty", this.smeltingDifficulty);
+        tagCompound.setBoolean("SpawnGolems", this.spawnGolems);
+
+        NBTTagList tagList = new NBTTagList();
+
+        for (int i = 0; i < this.golems.length; i++) {
+            if (this.golems[i] != null) {
+                NBTTagCompound tagCompound1 = new NBTTagCompound();
+                tagCompound1.setByte("Id", (byte) i);
+                this.golems[i].writeToNBT(tagCompound1);
+                tagList.appendTag(tagCompound1);
+            }
+        }
+
+        tagCompound.setTag("Golems", tagList);
     }
 
     /**
@@ -194,6 +235,8 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
 
         boolean update = clearItemStacks();
 
+        if (!this.isGolemsValid && this.golems.length > 0) updateLocalGolemFromWorld();
+
         if (this.getModel() == null || this.getPlate() == null) {
             this.inProgress = false;
             this.progressValue = 0;
@@ -221,6 +264,85 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
         }
 
         super.updateEntity();
+    }
+
+    /**
+     * Permet de férifier si toute les condition sont valid pour smelt
+     *
+     * @return boolean
+     */
+    @Override
+    protected boolean smeltValid() {
+        if (this.spawnGolems) {
+            boolean valid = true;
+            for (int i = 0; i < 5; i++) {
+                if (this.golems[i] != null && !this.golems[i].isEntityAlive()) {
+                    this.golems[i] = null;
+                } else if (this.golems[i] != null && this.golems[i].isEntityAlive()) {
+                    valid = false;
+                }
+            }
+
+            if (!valid) return false;
+
+            // TODO : SHOW NOTIF
+
+            this.spawnGolems = false;
+            return true;
+        } else if (!this.worldObj.isRemote) {
+            spawnGolem();
+        }
+
+        return false;
+    }
+
+    private void spawnGolem() {
+        this.spawnGolems = true;
+        for (int i = 0; i < 5; i++) {
+            if (this.golems[i] == null) {
+                this.golems[i] = new EntityGolem(this.worldObj);
+                this.golems[i].setPosition(this.xCoord, this.yCoord + 1.5, this.zCoord);
+                this.golems[i].getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(this.golems[i].getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue() * smeltingDifficulty);
+                this.golems[i].getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(this.golems[i].getEntityAttribute(SharedMonsterAttributes.maxHealth).getAttributeValue() * smeltingDifficulty);
+                this.golems[i].onSpawnWithEgg(null);
+
+                this.worldObj.spawnEntityInWorld(this.golems[i]);
+            }
+        }
+
+        smeltingDifficulty *= 4;
+    }
+
+    /**
+     * Permet d'update les golem en local depuis les NBT en vrais entity
+     * /!\ NON OPTI /!\
+     * TODO : A Revoir
+     */
+    private void updateLocalGolemFromWorld() {
+        if (this.worldObj != null && !this.worldObj.isRemote) {
+            HashMap<String, Integer> uuid = new HashMap<String, Integer>();
+
+            for (int i = 0; i < this.golems.length; i++) {
+                if (this.golems[i] != null) {
+                    uuid.put(this.golems[i].getUniqueID().toString(), i);
+                }
+            }
+
+            for (int i = 0; i < this.worldObj.loadedEntityList.size(); i++) {
+                Object entity = this.worldObj.loadedEntityList.get(i);
+
+                if (entity != null && entity.getClass().equals(EntityGolem.class)) {
+                    String entityUuid = ((EntityGolem) entity).getUniqueID().toString();
+
+                    if (uuid.containsKey(entityUuid)) {
+                        int id = uuid.get(entityUuid);
+                        this.golems[id] = (EntityGolem) entity;
+                    }
+                }
+            }
+
+            this.isGolemsValid = true;
+        }
     }
 
     /**

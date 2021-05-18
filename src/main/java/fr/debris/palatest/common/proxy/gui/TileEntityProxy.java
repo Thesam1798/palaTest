@@ -2,7 +2,7 @@
  * @author Alexandre Debris <alexandre@debris.ovh>
  * @date 16/05/2021 : 20:43
  */
-package fr.debris.palatest.common.proxy;
+package fr.debris.palatest.common.proxy.gui;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ISidedInventory;
@@ -249,7 +249,7 @@ public abstract class TileEntityProxy extends TileEntity implements ISidedInvent
     public void updateEntity() {
         boolean update = clearItemStacks();
 
-        if (this.progressValue > 0) {
+        if (this.progressValue > 1) {
             --this.progressValue;
         }
 
@@ -258,10 +258,16 @@ public abstract class TileEntityProxy extends TileEntity implements ISidedInvent
                 this.progressValue = getItemBurnTime(this.itemStacks[3]);
                 this.inProgress = true;
                 update = true;
-            } else if (this.inProgress && this.progressValue == 0) {
-                this.inProgress = false;
-                update = true;
-                smeltItem();
+            } else if (this.inProgress && this.progressValue <= 1) {
+                if (smeltValid()) {
+                    this.inProgress = false;
+                    this.progressValue = 0;
+                    smeltItem();
+                    update = true;
+                } else {
+                    this.inProgress = true;
+                    this.progressValue = 2;
+                }
             }
         }
 
@@ -270,6 +276,13 @@ public abstract class TileEntityProxy extends TileEntity implements ISidedInvent
             updateEntity();
         }
     }
+
+    /**
+     * Permet de férifier si toute les condition sont valid pour smelt
+     *
+     * @return boolean
+     */
+    protected abstract boolean smeltValid();
 
     /**
      * Cela permet de process l'item

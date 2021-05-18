@@ -16,18 +16,14 @@ import fr.debris.palatest.common.proxy.CommonProxy;
 @Mod(modid = Reference.MOD_ID, version = Reference.MOD_VERSION, name = Reference.MOD_NAME)
 public class Main {
 
-    protected static Object instance;
-
-    public static Object getInstance() {
-        return instance;
-    }
+    @Mod.Instance(Reference.MOD_ID)
+    public static Main instance;
 
     @SidedProxy(clientSide = Reference.PROXY_CLIENT_CLASS, serverSide = Reference.PROXY_SERVER_CLASS)
     protected static CommonProxy proxy;
 
     @EventHandler
     public void preInit(FMLPreInitializationEvent event) {
-        instance = this;
         proxy.preInit();
     }
 
