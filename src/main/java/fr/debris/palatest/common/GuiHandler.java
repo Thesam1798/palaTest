@@ -27,6 +27,11 @@ public class GuiHandler implements IGuiHandler {
             TileEntityWaterGrinder tileEntityWaterGrinder = (TileEntityWaterGrinder) world.getTileEntity(x, y, z);
             return new GuiWaterGrinder(player.inventory, tileEntityWaterGrinder);
         }
+
+        if (id == 1) {
+            TileEntityWaterGrinder tileEntityWaterGrinder = (TileEntityWaterGrinder) world.getTileEntity(x, y, z);
+            return new GuiWaterGrinder(player.inventory, tileEntityWaterGrinder);
+        }
         return null;
     }
 }

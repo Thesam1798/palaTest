@@ -9,6 +9,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import fr.debris.palatest.Main;
 import fr.debris.palatest.common.Reference;
+import fr.debris.palatest.common.network.GrinderTileEntityNetwork;
 import fr.debris.palatest.common.proxy.CommonProxy;
 import fr.debris.palatest.common.proxy.gui.TileEntityProxy;
 import net.minecraft.block.Block;
@@ -91,17 +92,25 @@ public class MachineProxy extends BlockContainer {
                 float f2 = this.random.nextFloat() * 0.6F + 0.1F;
                 float f3 = this.random.nextFloat() * 0.6F + 0.1F;
 
+                EntityItem entityItem = new EntityItem(world, x + f1, y + f2, z + f3, new ItemStack(Item.getItemFromBlock(blockOnDrop), 1));
+                float f4 = 0.025F;
+                entityItem.motionX = this.random.nextGaussian() * f4;
+                entityItem.motionY = this.random.nextGaussian() * f4 + 0.1F;
+                entityItem.motionZ = this.random.nextGaussian() * f4;
+
+                world.spawnEntityInWorld(entityItem);
+
                 while (itemStack.stackSize > 0) {
                     int j = Math.min(this.random.nextInt(21) + 10, itemStack.stackSize);
 
                     itemStack.stackSize -= j;
-                    EntityItem entityItem = new EntityItem(world, x + f1, y + f2, z + f3, new ItemStack(itemStack.getItem(), j, itemStack.getItemDamage()));
+                    entityItem = new EntityItem(world, x + f1, y + f2, z + f3, new ItemStack(itemStack.getItem(), j, itemStack.getItemDamage()));
 
                     if (itemStack.hasTagCompound()) {
                         entityItem.getEntityItem().setTagCompound((NBTTagCompound) itemStack.getTagCompound().copy());
                     }
 
-                    float f4 = 0.025F;
+                    f4 = 0.025F;
                     entityItem.motionX = this.random.nextGaussian() * f4;
                     entityItem.motionY = this.random.nextGaussian() * f4 + 0.1F;
                     entityItem.motionZ = this.random.nextGaussian() * f4;
@@ -207,7 +216,19 @@ public class MachineProxy extends BlockContainer {
      */
     @Override
     public boolean onBlockActivated(World world, int x, int y, int z, EntityPlayer player, int i1, float f1, float f2, float f3) {
-        player.openGui(Main.instance, this.guiInstance, world, x, y, z);
+        if (isActivable(world, x, y, z, player)) {
+            if (world.isRemote) {
+                Main.getNetworkWrapper().sendToServer(new GrinderTileEntityNetwork(x, y, z, player.getUniqueID()));
+            }
+            this.entity.setLastPlayerOpen(player);
+            player.openGui(Main.instance, this.guiInstance, world, x, y, z);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean isActivable(World world, int x, int y, int z, EntityPlayer player) {
         return true;
     }
 

@@ -12,11 +12,11 @@ import net.minecraft.world.World;
 
 public class EntityGolem extends EntityMob {
 
-    private static final double MAX_HEALTH = 20.0D;
-    private static final double FOLLOW_RANGE = 40.0D;
-    private static final double KNOCKBACK_RESISTANCE = 0.0D;
-    private static final double MOVEMENT_SPEED = 0.26D;
-    private static final double ATTACK_DAMAGE = 4.0D;
+    public static final double MAX_HEALTH = 20.0D;
+    public static final double FOLLOW_RANGE = 40.0D;
+    public static final double KNOCKBACK_RESISTANCE = 0.0D;
+    public static final double MOVEMENT_SPEED = 0.26D;
+    public static final double ATTACK_DAMAGE = 4.0D;
 
     public EntityGolem(World world) {
         super(world);
@@ -29,6 +29,9 @@ public class EntityGolem extends EntityMob {
         this.tasks.addTask(8, new EntityAILookIdle(this));
         this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, true));
         this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 0, true));
+
+        // Persiste entity
+        this.func_110163_bv();
     }
 
     @Override

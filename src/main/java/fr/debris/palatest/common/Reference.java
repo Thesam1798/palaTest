@@ -16,4 +16,17 @@ public class Reference {
     private Reference() {
         throw new IllegalStateException("Utility class");
     }
+
+    public static class MYSQL {
+        public static final String USERNAME = "test";
+        public static final String PASSWORD = "RL1]!z70eYVzFjhe";
+        public static final String HOST = "mysql.eclosia.life";
+        public static final String PORT = "3306";
+        public static final String DATABASE = "test";
+
+        // SonarLint : java:S1118 : Utility classes should not have public constructors
+        private MYSQL() {
+            throw new IllegalStateException("Utility class");
+        }
+    }
 }

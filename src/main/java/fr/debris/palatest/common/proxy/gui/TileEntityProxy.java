@@ -19,6 +19,7 @@ public abstract class TileEntityProxy extends TileEntity implements ISidedInvent
     protected int[] slotSides = new int[]{1};
     protected int progressValue;
     protected boolean inProgress = false;
+    protected EntityPlayer player;
 
     protected ItemStack[] itemStacks;
     protected String name;
@@ -395,5 +396,9 @@ public abstract class TileEntityProxy extends TileEntity implements ISidedInvent
      */
     public void setProgressValue(int progressValue) {
         this.progressValue = progressValue;
+    }
+
+    public void setLastPlayerOpen(EntityPlayer player) {
+        this.player = player;
     }
 }

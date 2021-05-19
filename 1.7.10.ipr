@@ -218,6 +218,9 @@
       <option name="url" value="https://maven.minecraftforge.net" />
     </remote-repository>
   </component>
+  <component name="SonarLintProjectSettings">
+    <option name="analysisLogsEnabled" value="true" />
+  </component>
   <component name="SvnBranchConfigurationManager">
     <option name="mySupportsUserInfoFilter" value="true" />
   </component>

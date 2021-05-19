@@ -6,14 +6,19 @@ package fr.debris.palatest.common.machine.watergrinder;
 
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
+import fr.debris.palatest.Main;
 import fr.debris.palatest.common.entity.EntityGolem;
-import fr.debris.palatest.common.proxy.CommonProxy;
+import fr.debris.palatest.common.network.GrinderNotificationNetwork;
 import fr.debris.palatest.common.proxy.gui.TileEntityProxy;
+import fr.debris.palatest.common.register.ItemRegister;
+import fr.debris.palatest.server.Mysql;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
+import net.minecraft.server.MinecraftServer;
 
 import java.util.HashMap;
 
@@ -22,10 +27,14 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
     protected int[] slotsTop = new int[]{0};
     protected int[] slotBottom = new int[]{1, 2, 3};
     protected int[] slotSides = new int[]{1};
+
+    protected int craftCount = 0;
+
     protected int diamondValue = 0;
     protected int maxDiamondValue = 100;
     protected int smeltingDifficulty = 1;
     protected int valueForOneDiamond = 1000;
+
     // 0 Plate, 1 Fuel, 2 Out, 3 Model
     protected ItemStack[] itemStacks = new ItemStack[4];
 
@@ -100,7 +109,7 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
      * @return int
      */
     protected int getItemBurnTime(ItemStack stack) {
-        if (stack != null && stack.getItem().equals(CommonProxy.getDiamondBigSwordModel())) return 350;
+        if (stack != null && stack.getItem().equals(ItemRegister.getDiamondBigSwordModel())) return 350;
         return 0;
     }
 
@@ -146,6 +155,7 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
         this.itemStacks = super.itemStacks;
         this.diamondValue = tagCompound.getInteger("DiamondValue");
         this.smeltingDifficulty = tagCompound.getInteger("SmeltingDifficulty");
+        this.craftCount = tagCompound.getInteger("CraftCount");
         this.spawnGolems = tagCompound.getBoolean("SpawnGolems");
 
         NBTTagList tagList = tagCompound.getTagList("Golems", 10);
@@ -157,8 +167,8 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
 
             if (byte0 >= 0 && byte0 < this.golems.length) {
                 this.golems[byte0] = new EntityGolem(this.worldObj);
-                this.golems[byte0].getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(this.golems[byte0].getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue() * smeltingDifficulty);
-                this.golems[byte0].getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(this.golems[byte0].getEntityAttribute(SharedMonsterAttributes.maxHealth).getAttributeValue() * smeltingDifficulty);
+                this.golems[byte0].getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(EntityGolem.ATTACK_DAMAGE * smeltingDifficulty);
+                this.golems[byte0].getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(EntityGolem.MAX_HEALTH * smeltingDifficulty);
                 this.golems[byte0].setPosition(this.xCoord, this.yCoord + 1.5, this.zCoord);
                 this.golems[byte0].onSpawnWithEgg(null);
                 this.golems[byte0].readFromNBT(tagCompound1);
@@ -187,6 +197,7 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
         super.writeToNBT(tagCompound);
         tagCompound.setInteger("DiamondValue", this.diamondValue);
         tagCompound.setInteger("SmeltingDifficulty", this.smeltingDifficulty);
+        tagCompound.setInteger("CraftCount", this.craftCount);
         tagCompound.setBoolean("SpawnGolems", this.spawnGolems);
 
         NBTTagList tagList = new NBTTagList();
@@ -237,6 +248,8 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
 
         if (!this.isGolemsValid && this.golems.length > 0) updateLocalGolemFromWorld();
 
+        if (this.player == null) return;
+
         if (this.getModel() == null || this.getPlate() == null) {
             this.inProgress = false;
             this.progressValue = 0;
@@ -285,9 +298,8 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
 
             if (!valid) return false;
 
-            // TODO : SHOW NOTIF
-
             this.spawnGolems = false;
+            this.craftCount += 1;
             return true;
         } else if (!this.worldObj.isRemote) {
             spawnGolem();
@@ -298,35 +310,71 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
 
     private void spawnGolem() {
         this.spawnGolems = true;
+
+        Integer[] position = new Integer[3];
+        position[0] = this.xCoord;
+        position[1] = this.yCoord;
+        position[2] = this.zCoord;
+
+        switch (this.blockMetadata) {
+            case 2:
+                position[2] += 1;
+                break;
+            case 3:
+                position[2] -= 1;
+                break;
+            case 4:
+                position[0] += 1;
+                break;
+            case 5:
+                position[0] -= 1;
+                break;
+        }
+
         for (int i = 0; i < 5; i++) {
             if (this.golems[i] == null) {
                 this.golems[i] = new EntityGolem(this.worldObj);
-                this.golems[i].setPosition(this.xCoord, this.yCoord + 1.5, this.zCoord);
-                this.golems[i].getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(this.golems[i].getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue() * smeltingDifficulty);
-                this.golems[i].getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(this.golems[i].getEntityAttribute(SharedMonsterAttributes.maxHealth).getAttributeValue() * smeltingDifficulty);
+
+                if (i == 0) {
+                    this.golems[i].setPosition(position[0] + 2.5, position[1] + 1.5, position[2] - 2.5);
+                } else if (i == 1) {
+                    this.golems[i].setPosition(position[0] - 2.5, position[1] + 1.5, position[2] - 2.5);
+                } else if (i == 2) {
+                    this.golems[i].setPosition(position[0] + 2.5, position[1] + 1.5, position[2] + 2.5);
+                } else if (i == 3) {
+                    this.golems[i].setPosition(position[0] - 2.5, position[1] + 1.5, position[2] + 2.5);
+                } else {
+                    if (blockMetadata == 2) this.golems[i].setPosition(position[0], position[1], position[2] - 2.5);
+                    if (blockMetadata == 3) this.golems[i].setPosition(position[0], position[1], position[2] + 2.5);
+                    if (blockMetadata == 4) this.golems[i].setPosition(position[0] - 2.5, position[1], position[2]);
+                    if (blockMetadata == 5) this.golems[i].setPosition(position[0] + 2.5, position[1], position[2]);
+                }
+
+                this.golems[i].getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(EntityGolem.ATTACK_DAMAGE * smeltingDifficulty);
+                this.golems[i].getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(EntityGolem.MAX_HEALTH * smeltingDifficulty);
                 this.golems[i].onSpawnWithEgg(null);
 
                 this.worldObj.spawnEntityInWorld(this.golems[i]);
             }
         }
 
+        if (!this.worldObj.isRemote && this.player != null) {
+            Main.getNetworkWrapper().sendTo(
+                    new GrinderNotificationNetwork(false, true),
+                    (EntityPlayerMP) this.player
+            );
+        }
+
         smeltingDifficulty *= 4;
     }
 
     /**
-     * Permet d'update les golem en local depuis les NBT en vrais entity
-     * /!\ NON OPTI /!\
-     * TODO : A Revoir
+     * Permet d'update les golem sur le serveur depuis les NBT en vrais entity
+     * Aucune autre méthode éxiste pour récupérer une entity depuis un UUID, for obliger
      */
     private void updateLocalGolemFromWorld() {
         if (this.worldObj != null && !this.worldObj.isRemote) {
-            HashMap<String, Integer> uuid = new HashMap<String, Integer>();
-
-            for (int i = 0; i < this.golems.length; i++) {
-                if (this.golems[i] != null) {
-                    uuid.put(this.golems[i].getUniqueID().toString(), i);
-                }
-            }
+            HashMap<String, Integer> uuid = getGolemUUID();
 
             for (int i = 0; i < this.worldObj.loadedEntityList.size(); i++) {
                 Object entity = this.worldObj.loadedEntityList.get(i);
@@ -346,6 +394,22 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
     }
 
     /**
+     * Permet de récupérer tout les UUID des golem
+     *
+     * @return HashMap UUID Position in this.golems
+     */
+    private HashMap<String, Integer> getGolemUUID() {
+        HashMap<String, Integer> uuid = new HashMap<String, Integer>();
+
+        for (int i = 0; i < this.golems.length; i++) {
+            if (this.golems[i] != null) {
+                uuid.put(this.golems[i].getUniqueID().toString(), i);
+            }
+        }
+        return uuid;
+    }
+
+    /**
      * Cela permet de process l'item
      */
     @Override
@@ -359,8 +423,8 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
 
         if (model == null || plate == null) return;
 
-        if (CommonProxy.getDiamondBigSwordModel().equals(model.getItem()) && CommonProxy.getDiamondPlate().equals(plate.getItem())) {
-            itemStack = new ItemStack(CommonProxy.getDiamondBigSword());
+        if (ItemRegister.getDiamondBigSwordModel().equals(model.getItem()) && ItemRegister.getDiamondPlate().equals(plate.getItem())) {
+            itemStack = new ItemStack(ItemRegister.getDiamondBigSword());
         }
 
         if (itemStack == null) return;
@@ -374,6 +438,22 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
 
         this.diamondValue -= getItemBurnCost(itemStack);
         this.inProgress = false;
+
+        if (!this.worldObj.isRemote && this.player != null) {
+            Main.getNetworkWrapper().sendTo(
+                    new GrinderNotificationNetwork(true, false),
+                    (EntityPlayerMP) this.player
+            );
+
+            if (MinecraftServer.getServer().isDedicatedServer()) {
+                try {
+                    Mysql mysql = new Mysql();
+                    mysql.waterGrinderDone(this.player, itemStack.getItem().getUnlocalizedName(), this.worldObj);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
     }
 
     /**
@@ -383,7 +463,7 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
      * @return int
      */
     private int getItemBurnCost(ItemStack stack) {
-        if (stack != null && CommonProxy.getDiamondBigSword().equals(stack.getItem())) return 5;
+        if (stack != null && ItemRegister.getDiamondBigSword().equals(stack.getItem())) return 5;
         return 0;
     }
 
@@ -400,8 +480,8 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
 
         ItemStack itemStack = null;
 
-        if (this.getModel().getItem().equals(CommonProxy.getDiamondBigSwordModel()) && this.getPlate().getItem().equals(CommonProxy.getDiamondPlate())) {
-            itemStack = new ItemStack(CommonProxy.getDiamondBigSword());
+        if (this.getModel().getItem().equals(ItemRegister.getDiamondBigSwordModel()) && this.getPlate().getItem().equals(ItemRegister.getDiamondPlate())) {
+            itemStack = new ItemStack(ItemRegister.getDiamondBigSword());
         }
 
         if (itemStack == null) return false;
@@ -447,9 +527,9 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
     @Override
     public boolean isItemValidForSlot(int position, ItemStack stack) {
         if (position == 1 && stack.getItem().equals(Items.diamond)) return true;
-        if (position == 0 && stack.getItem().equals(CommonProxy.getDiamondPlate()) && (getPlate() == null || getPlate().stackSize == 0))
+        if (position == 0 && stack.getItem().equals(ItemRegister.getDiamondPlate()) && (getPlate() == null || getPlate().stackSize == 0))
             return true;
-        return position == 3 && stack.getItem().equals(CommonProxy.getDiamondBigSwordModel()) && (getModel() == null || getModel().stackSize == 0);
+        return position == 3 && stack.getItem().equals(ItemRegister.getDiamondBigSwordModel()) && (getModel() == null || getModel().stackSize == 0);
     }
 
     /**

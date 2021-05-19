@@ -15,6 +15,9 @@ public class EntityProxy {
         int id = EntityRegistry.findGlobalUniqueEntityId();
         EntityRegistry.registerGlobalEntityID(entity, name, id);
         EntityRegistry.registerModEntity(entity, name, id, Main.instance, 64, 1, true);
-        EntityList.entityEggs.put(id, new EntityList.EntityEggInfo(id, solidColor, sopColor));
+
+        if (EntityList.entityEggs != null) {
+            EntityList.entityEggs.put(id, new EntityList.EntityEggInfo(id, solidColor, sopColor));
+        }
     }
 }
