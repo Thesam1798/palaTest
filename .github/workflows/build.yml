@@ -25,7 +25,7 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Make gradlew executable
-        run: chmod +x ./gradlew
+        run: chmod -R +x ./*
 
       - name: Build
         run: |
