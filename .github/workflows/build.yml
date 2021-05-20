@@ -28,7 +28,10 @@ jobs:
         run: chmod -R +x ./*
 
       - name: Clear build file if existe
-        run: rm -rfi ./eclipse
+        run: if [ -d "./build" ]; then rm -Rf ./build; fi
+
+      - name: Clear eclipse file if existe
+        run: if [ -d "./eclipse" ]; then rm -Rf ./eclipse; fi
 
       - name: Build
         run: |
