@@ -1,6 +1,8 @@
 
 # PalaTest (Forge 1.7.10 - 10.13.4.1614)
 
+[![Build Script](https://github.com/Thesam1798/palaTest/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/Thesam1798/palaTest/actions/workflows/build.yml)
+
 ## Building and setting up
 
 Run the following commands in the root directory:
