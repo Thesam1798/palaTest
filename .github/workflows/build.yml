@@ -52,3 +52,4 @@ jobs:
           title: "${{ github.event.head_commit.message }}"
           files: |
             **/build/libs/palatest-*.jar
+
