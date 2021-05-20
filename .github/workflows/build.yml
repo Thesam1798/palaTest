@@ -27,6 +27,9 @@ jobs:
       - name: Make gradlew executable
         run: chmod -R +x ./*
 
+      - name: Clear build file if existe
+        run: rm -rfi ./eclipse
+
       - name: Build
         run: |
           ./gradlew build
@@ -38,7 +41,7 @@ jobs:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
           draft: false
           prerelease: true
-          automatic_release_tag: latest
+          automatic_release_tag: dev
           title: "${{ github.event.head_commit.message }}"
           files: |
             **/build/libs/palatest-*.jar
