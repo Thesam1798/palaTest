@@ -24,6 +24,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: Make gradlew executable
+        run: chmod +x ./gradlew
+
       - name: Build
         run: |
           ./gradlew build
@@ -32,4 +35,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: artifact
-          path: '**/build/libs/palatest-2021.5.1.jar-*.jar'
+          path: '**/build/libs/palatest-*.jar'
