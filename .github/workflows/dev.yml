@@ -3,10 +3,10 @@ name: Build Script
 on:
   push:
     branches:
-      - 'master'
+      - '!master'
   pull_request:
     branches:
-      - 'master'
+      - '!master'
 
 jobs:
   build:
@@ -46,9 +46,9 @@ jobs:
         uses: marvinpinto/action-automatic-releases@latest
         with:
           repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          draft: true
-          prerelease: false
-          automatic_release_tag: latest
+          draft: false
+          prerelease: true
+          automatic_release_tag: dev
           title: "${{ github.event.head_commit.message }}"
           files: |
             **/build/libs/palatest-*.jar
