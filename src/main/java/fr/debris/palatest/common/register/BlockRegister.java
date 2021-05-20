@@ -7,6 +7,9 @@ package fr.debris.palatest.common.register;
 import fr.debris.palatest.common.proxy.block.BlockProxy;
 import net.minecraft.block.material.Material;
 
+/**
+ * Enregistrement des different block
+ */
 public class BlockRegister {
 
     protected static BlockProxy frameGrinder;

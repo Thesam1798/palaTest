@@ -9,9 +9,9 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import fr.debris.palatest.Main;
 import fr.debris.palatest.common.Reference;
-import fr.debris.palatest.common.network.GrinderTileEntityNetwork;
 import fr.debris.palatest.common.proxy.CommonProxy;
 import fr.debris.palatest.common.proxy.gui.TileEntityProxy;
+import fr.debris.palatest.server.network.GrinderTileEntityNetwork;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
@@ -29,6 +29,9 @@ import net.minecraft.world.World;
 
 import java.util.Random;
 
+/**
+ * Sur class de BlockContainer pour l'enregistrement
+ */
 public class MachineProxy extends BlockContainer {
 
     private final String blockTexture;
@@ -228,6 +231,16 @@ public class MachineProxy extends BlockContainer {
         }
     }
 
+    /**
+     * Permet de savoir si il est autoriser d'ouvrir le GUI
+     *
+     * @param world  world
+     * @param x      X
+     * @param y      Y
+     * @param z      Z
+     * @param player joueur
+     * @return boolean
+     */
     public boolean isActivable(World world, int x, int y, int z, EntityPlayer player) {
         return true;
     }

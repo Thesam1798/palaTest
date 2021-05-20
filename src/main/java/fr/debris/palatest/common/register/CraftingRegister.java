@@ -9,6 +9,9 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 
+/**
+ * Enregistrement des different craft
+ */
 public class CraftingRegister {
 
     // SonarLint : java:S1118 : Utility classes should not have public constructors

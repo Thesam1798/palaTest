@@ -11,6 +11,9 @@ import fr.debris.palatest.common.machine.watergrinder.gui.GuiWaterGrinder;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
+/**
+ * Class de gestion de l'affichage des Gui en fonction de leur Id
+ */
 public class GuiHandler implements IGuiHandler {
     @Override
     public Object getServerGuiElement(int id, EntityPlayer player, World world, int x, int y, int z) {

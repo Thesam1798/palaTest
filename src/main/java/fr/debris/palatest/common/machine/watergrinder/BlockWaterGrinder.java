@@ -11,6 +11,9 @@ import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
+/**
+ * Création du block water grinder
+ */
 public class BlockWaterGrinder {
 
     protected static final String NAME = "water_grinder";
@@ -39,6 +42,16 @@ public class BlockWaterGrinder {
                 TAB,
                 ENTITY
         ) {
+            /**
+             * Action utiliser pour vérifier si le block peut afficher le GUI
+             *
+             * @param world  le monde
+             * @param x      X
+             * @param y      Y
+             * @param z      Z
+             * @param player le joueur
+             * @return boolean
+             */
             @Override
             public boolean isActivable(World world, int x, int y, int z, EntityPlayer player) {
                 if (world == null) return false;
@@ -54,12 +67,30 @@ public class BlockWaterGrinder {
                         verifyFrameBlock(world, position);
             }
 
+            /**
+             * Permet de vérifier que le block d'eau est bien présent et retourne la position
+             *
+             * @param world         le monde
+             * @param x             X
+             * @param y             Y
+             * @param z             Z
+             * @param position      Les position a modifier
+             * @param blockMetadata side
+             * @return boolean
+             */
             private boolean verifyWaterBlock(final World world, final int x, final int y, final int z, Integer[] position, final int blockMetadata) {
                 Block water = getWaterBlock(world, x, y, z, position, blockMetadata);
 
                 return water != null && water.getUnlocalizedName().equals("tile.water");
             }
 
+            /**
+             * Permet de récupérer le block d'eau
+             *
+             * @param world    le monde
+             * @param position X Y Z
+             * @return Block Nullable
+             */
             private Block getWaterBlock(final World world, final int x, final int y, final int z, Integer[] position, final int blockMetadata) {
                 final Block water;
                 // 2 Face on Nord
@@ -89,6 +120,13 @@ public class BlockWaterGrinder {
                 return water;
             }
 
+            /**
+             * Vérifit que tout les block de frame sont présent
+             *
+             * @param world    le monde
+             * @param position X Y Z
+             * @return boolean
+             */
             private boolean verifyFrameBlock(final World world, final Integer[] position) {
                 Block[] frame = new Block[20];
 
@@ -126,6 +164,14 @@ public class BlockWaterGrinder {
                 return true;
             }
 
+            /**
+             * Vérifit que tout les block de casing sont présent
+             *
+             * @param world         le monde
+             * @param position      X Y Z
+             * @param blockMetadata side
+             * @return boolean
+             */
             private boolean verifyCasingBlock(final World world, final Integer[] position, final int blockMetadata) {
                 Block[] casing = new Block[6];
 

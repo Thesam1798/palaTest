@@ -14,9 +14,12 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.event.world.WorldEvent;
 
+/**
+ * Class d'enregistrement de tout les event
+ */
 public class Event {
 
-    private final boolean mysqlLoaded = false;
+    private static final boolean MYSQL_LOADED = false;
 
     @SubscribeEvent
     @SideOnly(Side.CLIENT)
@@ -32,7 +35,7 @@ public class Event {
     @SubscribeEvent()
     @SideOnly(Side.SERVER)
     public void onDimensionLoad(WorldEvent.Load event) {
-        if (!mysqlLoaded && MinecraftServer.getServer().isDedicatedServer()) {
+        if (!MYSQL_LOADED && MinecraftServer.getServer().isDedicatedServer()) {
             try {
                 Mysql mysql = new Mysql();
                 mysql.recreateDatabase();

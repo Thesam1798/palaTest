@@ -22,6 +22,9 @@ import net.minecraft.server.MinecraftServer;
 
 import java.util.HashMap;
 
+/**
+ * Sur class de TileEntityProxy pour le water grinder
+ */
 public class TileEntityWaterGrinder extends TileEntityProxy {
 
     protected int[] slotsTop = new int[]{0};

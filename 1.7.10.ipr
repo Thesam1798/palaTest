@@ -45,6 +45,7 @@
   <component name="InspectionProjectProfileManager">
     <profile version="1.0">
       <option name="myName" value="Project Default" />
+      <inspection_tool class="SqlResolveInspection" enabled="true" level="TYPO" enabled_by_default="true" />
     </profile>
     <version value="1.0" />
   </component>
@@ -291,14 +292,12 @@
     </option>
   </component>
   <component name="libraryTable">
-    <library name="Gradle: :forgeSrc:1.7.10-10.13.4.1614-1.7.10">
+    <library name="Gradle: :forgeBin:1.7.10-10.13.4.1614-1.7.10">
       <CLASSES>
-        <root url="jar://$USER_HOME$/.gradle/caches/minecraft/net/minecraftforge/forge/1.7.10-10.13.4.1614-1.7.10/forgeSrc-1.7.10-10.13.4.1614-1.7.10.jar!/" />
+        <root url="jar://$USER_HOME$/.gradle/caches/minecraft/net/minecraftforge/forge/1.7.10-10.13.4.1614-1.7.10/forgeBin-1.7.10-10.13.4.1614-1.7.10.jar!/" />
       </CLASSES>
       <JAVADOC />
-      <SOURCES>
-        <root url="jar://$USER_HOME$/.gradle/caches/minecraft/net/minecraftforge/forge/1.7.10-10.13.4.1614-1.7.10/forgeSrc-1.7.10-10.13.4.1614-1.7.10-sources.jar!/" />
-      </SOURCES>
+      <SOURCES />
     </library>
     <library name="Gradle: com.google.code.findbugs:jsr305:1.3.9">
       <CLASSES>
@@ -327,6 +326,17 @@
       </JAVADOC>
       <SOURCES>
         <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.guava/guava/17.0/7ca0efbeb87ca845b5d7a0ac9c21a4b7b95f7b28/guava-17.0-sources.jar!/" />
+      </SOURCES>
+    </library>
+    <library name="Gradle: com.google.protobuf:protobuf-java:3.11.4">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.protobuf/protobuf-java/3.11.4/7ec0925cc3aef0335bbc7d57edfd42b0f86f8267/protobuf-java-3.11.4.jar!/" />
+      </CLASSES>
+      <JAVADOC>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.protobuf/protobuf-java/3.11.4/ec133f29da3ad3e11dfd0d5fe34191ffc364adcd/protobuf-java-3.11.4-javadoc.jar!/" />
+      </JAVADOC>
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.google.protobuf/protobuf-java/3.11.4/1e3a86dde8ecf9410e23f22a67ad062316fe94a/protobuf-java-3.11.4-sources.jar!/" />
       </SOURCES>
     </library>
     <library name="Gradle: com.ibm.icu:icu4j-core-mojang:51.2">
@@ -478,6 +488,15 @@
       </CLASSES>
       <JAVADOC />
       <SOURCES />
+    </library>
+    <library name="Gradle: mysql:mysql-connector-java:8.0.25">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/8.0.25/f8b9123acd13058c941aff25f308c9ed8000bb73/mysql-connector-java-8.0.25.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/mysql/mysql-connector-java/8.0.25/3e9fceb35ffa95f07c5dd652c6c7754d361d008c/mysql-connector-java-8.0.25-sources.jar!/" />
+      </SOURCES>
     </library>
     <library name="Gradle: net.java.jinput:jinput-platform:natives-linux:2.0.5">
       <CLASSES>

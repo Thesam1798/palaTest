@@ -16,6 +16,9 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.inventory.SlotFurnace;
 import net.minecraft.item.ItemStack;
 
+/**
+ * Sur class de Container pour l'affichage du water grinder
+ */
 public class ContainerWaterGrinder extends Container {
 
     private final TileEntityWaterGrinder tileEntity;

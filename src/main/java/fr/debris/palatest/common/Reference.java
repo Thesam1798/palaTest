@@ -4,6 +4,9 @@
  */
 package fr.debris.palatest.common;
 
+/**
+ * Class de tout les référence que le mod pourrait avoir besoin
+ */
 public class Reference {
     public static final String MOD_NAME = "Pala Test";
     public static final String MOD_ID = "palatest";

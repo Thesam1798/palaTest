@@ -15,8 +15,8 @@ import cpw.mods.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import cpw.mods.fml.relauncher.Side;
 import fr.debris.palatest.common.Reference;
 import fr.debris.palatest.common.network.GrinderNotificationNetwork;
-import fr.debris.palatest.common.network.GrinderTileEntityNetwork;
 import fr.debris.palatest.common.proxy.CommonProxy;
+import fr.debris.palatest.server.network.GrinderTileEntityNetwork;
 import net.minecraftforge.common.MinecraftForge;
 
 @Mod(modid = Reference.MOD_ID, version = Reference.MOD_VERSION, name = Reference.MOD_NAME)

@@ -11,6 +11,9 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemSpade;
 
+/**
+ * Sur class de ItemSpade pour l'enregistrement
+ */
 public class ItemSpadeProxy extends ItemSpade {
 
     public ItemSpadeProxy(String name, Item.ToolMaterial material) {

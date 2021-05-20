@@ -7,6 +7,9 @@ package fr.debris.palatest.common.register;
 import fr.debris.palatest.common.proxy.items.ItemProxy;
 import fr.debris.palatest.common.proxy.items.ItemSwordProxy;
 
+/**
+ * Enregistrement des different item
+ */
 public class ItemRegister {
 
     protected static ItemSwordProxy diamondBigSword;

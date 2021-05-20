@@ -4,9 +4,12 @@
  */
 package fr.debris.palatest.common.register;
 
-import fr.debris.palatest.common.proxy.material.MaterialProxy;
 import net.minecraft.item.Item;
+import net.minecraftforge.common.util.EnumHelper;
 
+/**
+ * Enregistrement des different matériaux
+ */
 public class MaterialRegister {
     protected static Item.ToolMaterial grinderMaterial;
 
@@ -16,7 +19,7 @@ public class MaterialRegister {
     }
 
     public static void setup() {
-        grinderMaterial = MaterialProxy.newMaterial("Grinder Material", 3, 250, 10F, 5F, 0);
+        grinderMaterial = EnumHelper.addToolMaterial("Grinder Material", 3, 250, 10F, 5F, 0);
     }
 
     public static Item.ToolMaterial getGrinderMaterial() {

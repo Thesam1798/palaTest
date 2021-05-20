@@ -11,6 +11,9 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemHoe;
 
+/**
+ * Sur class de ItemHoe pour l'enregistrement
+ */
 public class ItemHoeProxy extends ItemHoe {
 
     public ItemHoeProxy(String name, Item.ToolMaterial material) {

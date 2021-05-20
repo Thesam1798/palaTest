@@ -14,6 +14,9 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.util.ResourceLocation;
 import org.lwjgl.opengl.GL11;
 
+/**
+ * Draw du GUI pour le water grinder
+ */
 @SideOnly(Side.CLIENT)
 public class GuiWaterGrinder extends GuiContainer {
 
@@ -74,8 +77,8 @@ public class GuiWaterGrinder extends GuiContainer {
         // p_73729_2_ : Y Destination
         // p_73729_3_ : X Source
         // p_73729_4_ : Y Source
-        // p_73729_5_ : Y Width
-        // p_73729_6_ : Y Height
+        // p_73729_5_ : Width
+        // p_73729_6_ : Height
         int size = this.tileEntity.getDiamondValueScaled(42);
         this.drawTexturedModalRect(k + 9, l + 8, 176, 19, 14, 42 - size);
 

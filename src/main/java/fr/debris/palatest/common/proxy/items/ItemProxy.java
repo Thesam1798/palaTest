@@ -9,6 +9,9 @@ import fr.debris.palatest.common.Reference;
 import fr.debris.palatest.common.proxy.CommonProxy;
 import net.minecraft.client.renderer.texture.IIconRegister;
 
+/**
+ * Sur class de Item pour l'enregistrement
+ */
 public class ItemProxy extends net.minecraft.item.Item {
 
     public ItemProxy(String name) {

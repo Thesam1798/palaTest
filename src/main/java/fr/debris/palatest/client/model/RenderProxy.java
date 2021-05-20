@@ -11,6 +11,9 @@ import net.minecraft.client.renderer.entity.RenderLiving;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.ResourceLocation;
 
+/**
+ * Sur class de RenderLiving pour le Golem
+ */
 public class RenderProxy extends RenderLiving {
     private static final ResourceLocation texture = new ResourceLocation(Reference.MOD_ID, "textures/entity/golem.png");
 

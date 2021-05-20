@@ -2,7 +2,7 @@
  * @author Alexandre Debris <alexandre@debris.ovh>
  * @date 19/05/2021 : 20:48
  */
-package fr.debris.palatest.common.network;
+package fr.debris.palatest.server.network;
 
 import cpw.mods.fml.common.network.simpleimpl.IMessage;
 import cpw.mods.fml.common.network.simpleimpl.IMessageHandler;
@@ -13,6 +13,9 @@ import net.minecraft.server.MinecraftServer;
 
 import java.util.UUID;
 
+/**
+ * Permet d'update le dernier joueur a avoir ouvert le Water grinder
+ */
 public class GrinderTileEntityNetwork implements IMessage {
 
 
@@ -35,6 +38,11 @@ public class GrinderTileEntityNetwork implements IMessage {
         this.uuid = uuid;
     }
 
+    /**
+     * Lecture du flux
+     *
+     * @param buf flux
+     */
     @Override
     public void fromBytes(ByteBuf buf) {
         this.x = buf.readInt();
@@ -44,6 +52,11 @@ public class GrinderTileEntityNetwork implements IMessage {
         this.uuid = UUID.fromString(new String(temp.array()));
     }
 
+    /**
+     * Écriture du flux
+     *
+     * @param buf flux
+     */
     @Override
     public void toBytes(ByteBuf buf) {
         buf.writeInt(this.x);
@@ -52,6 +65,9 @@ public class GrinderTileEntityNetwork implements IMessage {
         buf.writeBytes(this.uuid.toString().getBytes());
     }
 
+    /**
+     * Class a la reception d'un packet apres lecture du flux
+     */
     public static class Handler implements IMessageHandler<GrinderTileEntityNetwork, IMessage> {
 
         @Override

@@ -11,6 +11,9 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemPickaxe;
 
+/**
+ * Sur class de ItemPickaxe pour l'enregistrement
+ */
 public class ItemPickaxeProxy extends ItemPickaxe {
 
     public ItemPickaxeProxy(String name, Item.ToolMaterial material) {

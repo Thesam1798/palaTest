@@ -15,8 +15,17 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
+/**
+ * Gestion de la connection MySQL
+ */
 public class Mysql {
 
+    /**
+     * Permet de créer la table si elle n'existe pas
+     *
+     * @throws SQLException           Si une errer SQL
+     * @throws ClassNotFoundException si le driver est not found
+     */
     public void recreateDatabase() throws SQLException, ClassNotFoundException {
         Connection connection = getConnection();
 
@@ -26,6 +35,12 @@ public class Mysql {
         connection.close();
     }
 
+    /**
+     * Permet de créer la table si elle n'existe pas
+     *
+     * @throws SQLException           Si une errer SQL
+     * @throws ClassNotFoundException si le driver est not found
+     */
     public void waterGrinderDone(EntityPlayer player, String item, World world) throws SQLException, ClassNotFoundException {
         String sql = "INSERT into waterGrinder(player_name, craft_item, world_name, player_position) VALUE (?, ?, ?, ?);";
 
@@ -48,6 +63,13 @@ public class Mysql {
         connection.close();
     }
 
+    /**
+     * Créer la connection
+     *
+     * @return Connection
+     * @throws SQLException           Si une errer SQL
+     * @throws ClassNotFoundException si le driver est not found
+     */
     private Connection getConnection() throws ClassNotFoundException, SQLException {
         Class.forName("com.mysql.cj.jdbc.Driver");
 

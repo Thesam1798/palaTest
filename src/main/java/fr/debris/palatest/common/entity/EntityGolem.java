@@ -10,6 +10,9 @@ import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 
+/**
+ * Sur class de EntityMob pour la création d'une entity golem
+ */
 public class EntityGolem extends EntityMob {
 
     public static final double MAX_HEALTH = 20.0D;

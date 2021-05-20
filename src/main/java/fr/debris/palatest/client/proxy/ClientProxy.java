@@ -12,6 +12,9 @@ import fr.debris.palatest.common.entity.EntityGolem;
 import fr.debris.palatest.common.proxy.CommonProxy;
 import org.lwjgl.opengl.Display;
 
+/**
+ * Sur class de CommonProxy pour le client
+ */
 public class ClientProxy extends CommonProxy {
 
     @Override

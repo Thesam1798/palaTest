@@ -11,6 +11,9 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemSword;
 
+/**
+ * Sur class de ItemSword pour l'enregistrement
+ */
 public class ItemSwordProxy extends ItemSword {
 
     public ItemSwordProxy(String name, Item.ToolMaterial material) {

@@ -11,6 +11,9 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntity;
 
+/**
+ * Sur class de TileEntity pour l'enregistrement
+ */
 public abstract class TileEntityProxy extends TileEntity implements ISidedInventory {
 
     public static final String NBT_CUSTOM_NAME = "CustomName";
@@ -398,6 +401,11 @@ public abstract class TileEntityProxy extends TileEntity implements ISidedInvent
         this.progressValue = progressValue;
     }
 
+    /**
+     * Permet de set le dernier joueur qui a ouvert le TileEntity
+     *
+     * @param player joueur
+     */
     public void setLastPlayerOpen(EntityPlayer player) {
         this.player = player;
     }

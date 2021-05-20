@@ -11,6 +11,9 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemAxe;
 
+/**
+ * Sur class de ItemAxe pour l'enregistrement
+ */
 public class ItemAxeProxy extends ItemAxe {
 
     public ItemAxeProxy(String name, Item.ToolMaterial material) {

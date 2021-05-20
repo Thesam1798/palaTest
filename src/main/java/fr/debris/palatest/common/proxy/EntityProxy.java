@@ -9,6 +9,9 @@ import fr.debris.palatest.Main;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 
+/**
+ * Permet d'enregistréer une entity plus simplement
+ */
 public class EntityProxy {
 
     public EntityProxy(Class<? extends Entity> entity, String name, int solidColor, int sopColor) {

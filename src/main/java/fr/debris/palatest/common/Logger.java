@@ -6,6 +6,9 @@ package fr.debris.palatest.common;
 
 import cpw.mods.fml.common.FMLLog;
 
+/**
+ * Class pour print des log simplement
+ */
 public class Logger {
 
     private static final org.apache.logging.log4j.Logger log = FMLLog.getLogger();

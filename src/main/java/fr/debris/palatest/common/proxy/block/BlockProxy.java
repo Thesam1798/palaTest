@@ -13,6 +13,9 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 
+/**
+ * Sur class de Block pour l'enregistrement
+ */
 public class BlockProxy extends Block {
 
     protected final String name;

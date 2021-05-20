@@ -7,6 +7,9 @@ package fr.debris.palatest.common.register;
 import fr.debris.palatest.common.machine.watergrinder.BlockWaterGrinder;
 import fr.debris.palatest.common.proxy.block.MachineProxy;
 
+/**
+ * Enregistrement des different machine
+ */
 public class MachineRegister {
     protected static MachineProxy waterGrinder;
 

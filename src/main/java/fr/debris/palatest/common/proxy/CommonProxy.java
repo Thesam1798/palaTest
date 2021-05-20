@@ -18,8 +18,14 @@ import net.minecraft.item.Item;
 
 import static fr.debris.palatest.common.Logger.log;
 
+/**
+ * Class de base pour les different init
+ */
 public class CommonProxy {
 
+    /**
+     * Tab dans le creative
+     */
     public static final CreativeTabs palaTab = new CreativeTabs("palaTest") {
         public Item getTabIconItem() {
             if (MachineRegister.getWaterGrinder() != null) {
@@ -29,20 +35,19 @@ public class CommonProxy {
         }
     };
 
-    protected static void setupRecipe() {
-        log("Setup recipe is empty");
-    }
-
+    /**
+     * Init du mod ajout des recette et des GUI/Network
+     */
     public void init() {
-        setupRecipe();
-        setupNetworkGui();
-    }
+        CraftingRegister.setup();
 
-    public void setupNetworkGui() {
         NetworkRegistry.INSTANCE.registerGuiHandler(Main.instance, new GuiHandler());
         GameRegistry.registerTileEntity(TileEntityWaterGrinder.class, Reference.MOD_ID + "TileEntityWaterGrinder");
     }
 
+    /**
+     * Enregistrement de tout les block item material....
+     */
     public void preInit() {
         new EntityProxy(EntityGolem.class, "golem", 0xEC4545, 0x001EFF);
 
@@ -50,9 +55,11 @@ public class CommonProxy {
         ItemRegister.setup();
         MachineRegister.setup();
         BlockRegister.setup();
-        CraftingRegister.setup();
     }
 
+    /**
+     * Interaction avec d'autre mod
+     */
     public void postInit() {
         log("Post Init is empty");
     }
