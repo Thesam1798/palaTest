@@ -27,15 +27,14 @@ import java.util.HashMap;
  */
 public class TileEntityWaterGrinder extends TileEntityProxy {
 
+    private static final String WATER_GRINDER = "WaterGrinder";
+    private static final String CRAFT_DIFFICULTY = "CraftDifficulty";
+    private static final String CRAFT_COUNT = "CraftCount";
     protected int[] slotsTop = new int[]{0};
     protected int[] slotBottom = new int[]{1, 2, 3};
     protected int[] slotSides = new int[]{1};
-
-    protected int craftCount = 0;
-
     protected int diamondValue = 0;
     protected int maxDiamondValue = 100;
-    protected int smeltingDifficulty = 1;
     protected int valueForOneDiamond = 1000;
 
     // 0 Plate, 1 Fuel, 2 Out, 3 Model
@@ -157,8 +156,6 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
         super.readFromNBT(tagCompound);
         this.itemStacks = super.itemStacks;
         this.diamondValue = tagCompound.getInteger("DiamondValue");
-        this.smeltingDifficulty = tagCompound.getInteger("SmeltingDifficulty");
-        this.craftCount = tagCompound.getInteger("CraftCount");
         this.spawnGolems = tagCompound.getBoolean("SpawnGolems");
 
         NBTTagList tagList = tagCompound.getTagList("Golems", 10);
@@ -170,8 +167,6 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
 
             if (byte0 >= 0 && byte0 < this.golems.length) {
                 this.golems[byte0] = new EntityGolem(this.worldObj);
-                this.golems[byte0].getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(EntityGolem.ATTACK_DAMAGE * smeltingDifficulty);
-                this.golems[byte0].getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(EntityGolem.MAX_HEALTH * smeltingDifficulty);
                 this.golems[byte0].setPosition(this.xCoord, this.yCoord + 1.5, this.zCoord);
                 this.golems[byte0].onSpawnWithEgg(null);
                 this.golems[byte0].readFromNBT(tagCompound1);
@@ -199,8 +194,6 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
         super.itemStacks = this.itemStacks;
         super.writeToNBT(tagCompound);
         tagCompound.setInteger("DiamondValue", this.diamondValue);
-        tagCompound.setInteger("SmeltingDifficulty", this.smeltingDifficulty);
-        tagCompound.setInteger("CraftCount", this.craftCount);
         tagCompound.setBoolean("SpawnGolems", this.spawnGolems);
 
         NBTTagList tagList = new NBTTagList();
@@ -301,8 +294,9 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
 
             if (!valid) return false;
 
+            writePlayerNBT();
+
             this.spawnGolems = false;
-            this.craftCount += 1;
             return true;
         } else if (!this.worldObj.isRemote) {
             spawnGolem();
@@ -311,6 +305,49 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
         return false;
     }
 
+    /**
+     * Permet de set la difficulté et le nombres de craft dans le joueur
+     */
+    private void writePlayerNBT() {
+        if (this.player != null) {
+            NBTTagCompound tagCompound = this.player.getEntityData();
+            NBTTagList tagList = tagCompound.getTagList(WATER_GRINDER, 10);
+            NBTTagCompound tagCompound1 = new NBTTagCompound();
+
+            if (tagList == null) {
+                tagList = new NBTTagList();
+                tagCompound1.setInteger(CRAFT_COUNT, 1);
+                tagCompound1.setInteger(CRAFT_DIFFICULTY, 1);
+
+            } else {
+                NBTTagCompound readTag = tagList.getCompoundTagAt(0);
+                tagCompound1.setInteger(CRAFT_COUNT, readTag.getInteger(CRAFT_COUNT) + 1);
+                tagCompound1.setInteger(CRAFT_DIFFICULTY, readTag.getInteger(CRAFT_DIFFICULTY) + 1);
+            }
+
+            if (tagList.tagCount() >= 1) {
+                tagList.func_150304_a(0, tagCompound1);
+            } else {
+                tagList.appendTag(tagCompound1);
+            }
+
+            tagCompound.setTag(WATER_GRINDER, tagList);
+        }
+    }
+
+    private int getDifficultyPlayer() {
+        if (this.player != null) {
+            NBTTagCompound tagCompound = this.player.getEntityData();
+            NBTTagList tagList = tagCompound.getTagList(WATER_GRINDER, 10);
+            NBTTagCompound readTag = tagList.getCompoundTagAt(0);
+            return readTag.getInteger(CRAFT_DIFFICULTY);
+        }
+        return 1;
+    }
+
+    /**
+     * Permet de faire spawn les golem
+     */
     private void spawnGolem() {
         this.spawnGolems = true;
 
@@ -332,6 +369,8 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
             case 5:
                 position[0] -= 1;
                 break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + this.blockMetadata);
         }
 
         for (int i = 0; i < 5; i++) {
@@ -353,10 +392,9 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
                     if (blockMetadata == 5) this.golems[i].setPosition(position[0] + 2.5, position[1], position[2]);
                 }
 
-                this.golems[i].getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(EntityGolem.ATTACK_DAMAGE * smeltingDifficulty);
-                this.golems[i].getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(EntityGolem.MAX_HEALTH * smeltingDifficulty);
+                this.golems[i].getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(EntityGolem.ATTACK_DAMAGE * getDifficultyPlayer());
+                this.golems[i].getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(EntityGolem.MAX_HEALTH * getDifficultyPlayer());
                 this.golems[i].onSpawnWithEgg(null);
-
                 this.worldObj.spawnEntityInWorld(this.golems[i]);
             }
         }
@@ -367,8 +405,6 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
                     (EntityPlayerMP) this.player
             );
         }
-
-        smeltingDifficulty *= 4;
     }
 
     /**
@@ -551,10 +587,20 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
         return -1;
     }
 
+    /**
+     * Get Diamond in stockage
+     *
+     * @return diamondValue
+     */
     public int getDiamondValue() {
         return diamondValue;
     }
 
+    /**
+     * Définit le nombres de Diamond dans le stockage
+     *
+     * @param diamondValue int
+     */
     public void setDiamondValue(int diamondValue) {
         this.diamondValue = diamondValue;
     }
