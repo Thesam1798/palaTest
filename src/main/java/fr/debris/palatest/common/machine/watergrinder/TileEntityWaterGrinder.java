@@ -30,8 +30,8 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
     private static final String WATER_GRINDER = "WaterGrinder";
     private static final String CRAFT_DIFFICULTY = "CraftDifficulty";
     private static final String CRAFT_COUNT = "CraftCount";
-    protected int[] slotsTop = new int[]{0};
-    protected int[] slotBottom = new int[]{1, 2, 3};
+    protected int[] slotsTop = new int[]{0, 3};
+    protected int[] slotBottom = new int[]{0, 1, 2, 3};
     protected int[] slotSides = new int[]{1};
     protected int diamondValue = 0;
     protected int maxDiamondValue = 100;
@@ -239,6 +239,9 @@ public class TileEntityWaterGrinder extends TileEntityProxy {
     @Override
     public void updateEntity() {
         super.itemStacks = this.itemStacks;
+
+        // fix #1
+        if (!BlockWaterGrinder.isActivable(this.worldObj, this.xCoord, this.yCoord, this.zCoord)) return;
 
         boolean update = clearItemStacks();
 
